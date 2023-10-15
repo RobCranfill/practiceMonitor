@@ -1,15 +1,18 @@
 # Pi Practice Monitor
-*A FitBit for keyboard players*
+*A FitBit for MIDI keyboard players*
 
 ## Goal
-A bit of hardware (plus soft/firmware, of course) that I can plug into a
-MIDI keyboard that will monitor my keyboard practice. At a minimum, show
+A bit of hardware (plus software/firmware, of course) that I can plug into a
+MIDI keyboard (via USB) that will monitor my keyboard practice. At a minimum, show
 elapsed time for the week's practice. But other interting stats are possible.
 
 ## Main Hardware
-We need something that can act as a MIDI "host". This seems to be problematic
+We need something that can act as a MIDI/USB "host". This seems to be problematic
 for anything smaller that a Raspberry Pi Zero. I was hoping to use a Pi Pico or the like,
 but USB Host is poorly supported (in CircuitPython anyway).
+
+## Software
+I'm digging CircuitPython these days, so I hope to stick with that.
 
 ## Display
 Something built-in/on or ? Could be a web server to a UI, or report data to a server (?).
