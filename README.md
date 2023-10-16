@@ -1,5 +1,5 @@
 # Pi Practice Monitor
-*A FitBit for MIDI keyboard players*
+*Like a FitBit for (MIDI) keyboard players*
 
 ## Goal
 A bit of hardware (plus software/firmware, of course) that I can plug into a
@@ -13,6 +13,7 @@ but USB Host is poorly supported (in CircuitPython anyway).
 
 ## Software
 I'm digging CircuitPython these days, so I hope to stick with that.
+* ISSUE: Blinka (CP s/w for Pi) does not support USB MIDI! See https://docs.circuitpython.org/projects/blinka/en/latest/index.html
 
 ## Display
 Something built-in/on or ? Could be a web server to a UI, or report data to a server (?).
