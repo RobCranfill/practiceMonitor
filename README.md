@@ -24,3 +24,6 @@ For now, use a simple Pi display (via I2C?) of some sort.
  This is the second reason, after cost, that I'd prefer a Pico - how to make it safe to 
  simply power down the device? SOLUTION: Make filesystem read-only?
 
+## To Do
+ * Handle no MIDI device attached
+ 
