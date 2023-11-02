@@ -16,11 +16,11 @@ I'm digging CircuitPython these days, so I hope to stick with that.
 * ISSUE: Blinka (CP s/w for Pi) does not support USB MIDI! See https://docs.circuitpython.org/projects/blinka/en/latest/index.html
 
 ## Display
-Something built-in/on or ? Could be a web server to a UI - on my phone? - or report data to a server.
+Something built-in/on or ? Could be a web server to a UI, or report data to a server (?).
 For now, use a simple Pi display (via I2C?) of some sort.
 
 ## Issues
 * Power-down safety
  This is the second reason, after cost, that I'd prefer a Pico - how to make it safe to 
- simply power down the device? SOLUTION: Make filesystem read-only.
+ simply power down the device? SOLUTION: Make filesystem read-only?
 
