@@ -12,8 +12,12 @@ for anything smaller that a Raspberry Pi Zero. I was hoping to use a Pi Pico or 
 but USB Host is poorly supported (in CircuitPython anyway).
 
 ## Software
-I'm digging CircuitPython these days, so I hope to stick with that.
+A combination of Python 3.11.x and Bash script (minimal) will do for now.
+Also some udev rules to run it all?
+
+<strike>I'm digging CircuitPython these days, so I hope to stick with that.
 * ISSUE: Blinka (CP s/w for Pi) does not support USB MIDI! See https://docs.circuitpython.org/projects/blinka/en/latest/index.html
+</strike>
 
 ## Display
 Something built-in/on or ? Could be a web server to a UI, or report data to a server (?).
