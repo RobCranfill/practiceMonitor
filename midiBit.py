@@ -9,9 +9,6 @@ import PracticeDisplay2 as PracticeDisplay
 
 
 NO_ACTIVITY_TIMEOUT_SEC = 10
-DISPLAY_LINE_SESSION_TIME   = 1
-DISPLAY_LINE_SESSIONS       = 2
-DISPLAY_LINE_TIMEOUT        = 3
 
 time_last = 0
 total_practice_time = 0
@@ -21,7 +18,7 @@ display = PracticeDisplay.PracticeDisplay()
 
 
 display.clear_display()
-display.draw_line_white(DISPLAY_LINE_TIMEOUT, f"Timeout: {NO_ACTIVITY_TIMEOUT_SEC} seconds")
+display.showTimeout(NO_ACTIVITY_TIMEOUT_SEC)
 
 # main loop
 

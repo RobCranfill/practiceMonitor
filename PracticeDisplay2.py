@@ -14,9 +14,10 @@ FONT_SIZE_BIG = 48
 
 
 def pretty_time(secs):
-    m = int(secs//60)
-    s = int(secs %60)
-    return (f"{m}:{s:02}")
+    h = 0
+    m = int(secs // 60)
+    s = int(secs %  60)
+    return (f"{h:02}:{m:02}:{s:02}")
 
 class PracticeDisplay:
 
@@ -121,7 +122,7 @@ class PracticeDisplay:
         h = FONT_SIZE_BIG
 
         # black out old text
-        print(f"showElapsedTime clearing {x}, {y}, {w}, {y+h}")
+        # print(f"showElapsedTime clearing {x}, {y}, {w}, {y+h}")
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
         self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
@@ -129,7 +130,10 @@ class PracticeDisplay:
 
 
     def showSessionNumber(self, session_number):
-        self.draw_line_white(1, f"Session: {session_number}")
+        self.draw_line_white(8, f"Session: {session_number}")
+
+    def showTimeout(self, n_timeout):
+        self.draw_line_white(9, f"Timeout: {n_timeout} sec")
 
 
 def test():
