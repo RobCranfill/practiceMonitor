@@ -17,7 +17,7 @@ I'm digging CircuitPython these days, so I hope to stick with that.
 
 ## Display
 Something built-in/on or ? Could be a web server to a UI, or report data to a server (?).
-For now, use a simple Pi display (via I2C?) of some sort.
+Now uses an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) - very nice! 
 
 ## Issues
 * Power-down safety
