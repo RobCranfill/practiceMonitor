@@ -20,8 +20,9 @@ Also some udev rules to run it all?
 </strike>
 
 ## Display
+Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) - very nice! 
+
 Something built-in/on or ? Could be a web server to a UI, or report data to a server (?).
-Now uses an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) - very nice! 
 
 ## Issues
 * Power-down safety
@@ -31,3 +32,9 @@ Now uses an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) -
 ## To Do
  * Handle no MIDI device attached
  
+## Installation
+* Use a 'venv'
+* Python libs
+  * a, b, c
+* Linux softare
+  * PIL ?
