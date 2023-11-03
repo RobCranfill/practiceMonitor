@@ -107,14 +107,13 @@ class PracticeDisplay:
         # print(f"clearing {x}, {y}, {w}, {y+h}")
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
-        self.draw_.text((x, y), string, font=self.font_, fill=color)
+        self.draw_.text((x, y), string, font=self.small_font_, fill=color)
         self.disp_.image(self.image_, self.rotation_)
 
     def draw_line_white(self, line_number, string):
         self.draw_line_color(line_number, string, "#FFFFFF")
 
     def showElapsedTime(self, n_seconds):
-        # self.draw_line_white(3, f"{pretty_time(n_seconds)}")
 
         x = 0
         y = 0
@@ -125,9 +124,8 @@ class PracticeDisplay:
         print(f"showElapsedTime clearing {x}, {y}, {w}, {y+h}")
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
-        self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.font_big_, fill="#00FFFF")
+        self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
-
 
 
     def showSessionNumber(self, session_number):
