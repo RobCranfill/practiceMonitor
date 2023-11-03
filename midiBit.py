@@ -16,12 +16,12 @@ session_count = 0
 
 display = PracticeDisplay.PracticeDisplay()
 
-
 display.clear_display()
+display.showElapsedTime(total_practice_time)
+display.showSessionNumber(session_count)
 display.showTimeout(NO_ACTIVITY_TIMEOUT_SEC)
 
 # main loop
-
 for line in sys.stdin:
     line_read = line.rstrip().lstrip()
     time_sec = time.time()

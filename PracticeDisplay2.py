@@ -98,7 +98,7 @@ class PracticeDisplay:
         self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
         self.disp_.image(self.image_, self.rotation_)
 
-    def draw_line_color(self, line_number, string, color):
+    def draw_text_in_color(self, line_number, string, color):
         x = 0
         y = line_number * FONT_SIZE_SMALL
         w = self.width_
@@ -111,12 +111,11 @@ class PracticeDisplay:
         self.draw_.text((x, y), string, font=self.small_font_, fill=color)
         self.disp_.image(self.image_, self.rotation_)
 
-    def draw_line_white(self, line_number, string):
-        self.draw_line_color(line_number, string, "#FFFFFF")
+    def draw_text_in_white(self, line_number, string):
+        self.draw_text_in_color(line_number, string, "#FFFFFF")
 
     def showElapsedTime(self, n_seconds):
-
-        x = 0
+        x = 10
         y = 0
         w = self.width_
         h = FONT_SIZE_BIG
@@ -128,21 +127,20 @@ class PracticeDisplay:
         self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
 
-
     def showSessionNumber(self, session_number):
-        self.draw_line_white(8, f"Session: {session_number}")
+        self.draw_text_in_white(8, f"Session: {session_number}")
 
     def showTimeout(self, n_timeout):
-        self.draw_line_white(9, f"Timeout: {n_timeout} sec")
+        self.draw_text_in_color(9, f"Timeout: {n_timeout} sec", "#00FF00")
 
 
 def test():
     pd = PracticeDisplay()
     pd.clear_display()
-    pd.draw_line_color(1, "Hey Cran!",       "#FF0000")
-    pd.draw_line_color(2, "   what's",       "#00FF00")
-    pd.draw_line_color(3, "     happening?", "#00FFFF")
-    pd.draw_line_white(4, " okeedokee??")
+    pd.draw_text_in_color(1, "Hey Cran!",       "#FF0000")
+    pd.draw_text_in_color(2, "   what's",       "#00FF00")
+    pd.draw_text_in_color(3, "     happening?", "#00FFFF")
+    pd.draw_text_in_white(4, " okeedokee??")
     
     print("displaying!")
     # while True:
