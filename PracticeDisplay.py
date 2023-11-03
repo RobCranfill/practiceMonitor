@@ -9,6 +9,8 @@ import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
 
+FONT_SIZE = 24
+
 
 class PracticeDisplay:
 
@@ -74,7 +76,7 @@ class PracticeDisplay:
         # Alternatively load a TTF font.  Make sure the .ttf font file is in the
         # same directory as the python script!
         # Some other nice fonts to try: http://www.dafont.com/bitmap.php
-        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", 24)
+        font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONT_SIZE)
         self.font_ = font
 
         # Turn on the backlight
@@ -90,9 +92,9 @@ class PracticeDisplay:
 
     def draw_line_color(self, line_number, string, color):
         x = 0
-        y = line_number * 24
+        y = line_number * FONT_SIZE
         w = self.width_
-        h = 24
+        h = FONT_SIZE
 
         # black out old text
         # print(f"clearing {x}, {y}, {w}, {y+h}")
