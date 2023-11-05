@@ -31,6 +31,8 @@ Something built-in/on or ? Could be a web server to a UI, or report data to a se
 
 ## To Do
  * Handle no MIDI device attached
+ * Clear display when done
+ 
  
 ## Installation
 * Use a 'venv'

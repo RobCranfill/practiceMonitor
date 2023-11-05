@@ -55,7 +55,7 @@ class PracticeDisplay:
         height = disp.width  # we swap height/width to rotate it to landscape!
         width = disp.height
         image = Image.new("RGB", (width, height))
-        rotation = 180
+        rotation = 0
 
         # and these
         self.image_ = image
@@ -114,7 +114,7 @@ class PracticeDisplay:
     def draw_text_in_white(self, line_number, string):
         self.draw_text_in_color(line_number, string, "#FFFFFF")
 
-    def showElapsedTime(self, n_seconds):
+    def show_elapsed_time(self, n_seconds):
         x = 10
         y = 0
         w = self.width_
@@ -127,11 +127,15 @@ class PracticeDisplay:
         self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
 
-    def showSessionNumber(self, session_number):
-        self.draw_text_in_white(8, f"Session: {session_number}")
+    def show_session_number(self, session_number):
+        self.draw_text_in_white(5, f"Session: {session_number}")
 
-    def showTimeout(self, n_timeout):
-        self.draw_text_in_color(9, f"Timeout: {n_timeout} sec", "#00FF00")
+    def show_timeout(self, n_timeout):
+        self.draw_text_in_color(6, f"Timeout: {n_timeout} sec", "#00FF00")
+
+    def set_status_blob(self, color):
+        self.draw_.rectangle((5, 200, 25, 225), outline=0, fill=color)
+        self.disp_.image(self.image_, self.rotation_)
 
 
 def test():
