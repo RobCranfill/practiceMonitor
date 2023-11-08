@@ -1,6 +1,8 @@
-# first TK experiments
+# MIDI and TK
 
 from tkinter import *
+import mido
+
 
 BG_COLOR = "blue"
 MIDI_EVENT_DELAY_MS = 1000
@@ -24,13 +26,22 @@ def build_gui():
     return root
 
 
-def check_midi(app):
+def check_midi(app, midi_in):
+
     print("check_midi")
-    app.after(MIDI_EVENT_DELAY_MS, check_midi, app)  # reschedule event in 2 seconds
+    for msg in midi_in.iter_pending():
+        print(msg)
+
+    app.after(MIDI_EVENT_DELAY_MS, check_midi, app, midi_in)  # reschedule event
 
 
 app_window = build_gui()
-app_window.after(MIDI_EVENT_DELAY_MS, check_midi, app_window)
+
+midi_port = mido.open_input('MPKmini2:MPKmini2 MIDI 1 20:0')
+
+
+
+app_window.after(MIDI_EVENT_DELAY_MS, check_midi, app_window, midi_port)
 
 
 app_window.mainloop()
