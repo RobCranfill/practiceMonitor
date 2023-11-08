@@ -13,7 +13,7 @@ label = ttk.Label(
     frame,
     text="Hello, Cranface!",
     foreground="white",  # Set the text color to white
-    background="black"  # Set the background color to black
+    background="black"   # Set the background color to black
     )
 label.grid(column=0, row=0)
 
