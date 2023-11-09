@@ -18,6 +18,9 @@ class PracticeDisplay():
         self.label_time_total = Label(root, text="00:00:00", font=("Helvetica", 72), bg=BG_COLOR, fg="white")
         self.label_time_total.pack()
 
+        self.label_time_session = Label(root, text="00:00:00", font=("Helvetica", 72), bg=BG_COLOR, fg="white")
+        self.label_time_session.pack()
+
         self.label_sessions = Label(root, text="Sessions: 0", font=("Helvetica", 32), bg=BG_COLOR, fg="white")
         self.label_sessions.pack()
 
@@ -30,8 +33,14 @@ class PracticeDisplay():
     def get_root(self):
         return self.root
     
-    def set_time_label(self, label_string):
+    def set_time_total(self, label_string):
         self.label_time_total["text"] = label_string
+
+    def set_time_session(self, label_string):
+        self.label_time_session["text"] = label_string
+
+    def set_time_session_fg(self, str_color):
+        self.label_time_session["fg"] = str_color
 
     def set_session_label(self, label_string):
         self.label_sessions["text"] = label_string
