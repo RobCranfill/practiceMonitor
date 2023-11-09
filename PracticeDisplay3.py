@@ -30,6 +30,12 @@ class PracticeDisplay():
     def get_root(self):
         return self.root
     
-    def set_time_total(self, label_string):
+    def set_time_label(self, label_string):
         self.label_time_total["text"] = label_string
+
+    def set_session_label(self, label_string):
+        self.label_sessions["text"] = label_string
+
+    def set_notes_label(self, label_string):
+        self.label_notes["text"] = label_string
 

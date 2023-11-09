@@ -1,6 +1,8 @@
 # MIDI and TK
 
 from tkinter import *
+import time
+
 import mido
 
 import PracticeDisplay3
@@ -8,6 +10,7 @@ import PracticeDisplay3
 
 BG_COLOR = "blue"
 MIDI_EVENT_DELAY_MS = 100
+SESSION_TIMEOUT_SEC =  10
 
 
 def build_gui():
@@ -30,18 +33,68 @@ def build_gui():
 
     return root
 
-
+# FIXME: no globals - how?
+g_session_count = 0
+g_session_note_count = 0
 g_event_count = 0
+g_last_event_time = 0
+g_overall_start_time = time.time()
+g_event_time = time.time()
+g_session_data = {}
+g_inSession = False
+
 
 def check_midi(app, midi_in, display):
+    global g_session_count
+    global g_session_note_count
     global g_event_count
+    global g_event_count
+    global g_last_event_time
+    global g_overall_start_time
+    global g_event_time
+    global g_session_data
+    global g_inSession
 
     for msg in midi_in.iter_pending():
-        g_event_count += 1
-        print(f" {g_event_count} - {msg}")
-        display.set_time_total(f"Count: {g_event_count}")
 
-    app.after(MIDI_EVENT_DELAY_MS, check_midi, app, midi_in, display)  # reschedule event
+        if msg.type != 'note_on':
+            # print("  ^^ ignoring")
+            continue
+
+        g_event_count += 1
+        # print(f" {g_event_count} - {msg}")
+        display.set_notes_label(f"Notes: {g_event_count}")
+
+        g_session_note_count += 1
+        # print(f" note #{g_session_note_count} of session {g_session_count} at {(event_time-g_overall_start_time):.0f}")
+
+        g_event_time = time.time()
+        if g_inSession:
+            pass
+        else:
+            g_session_count += 1
+            print(f"Starting session #{g_session_count}")
+            g_session_note_count = 1
+            g_session_start_time = g_event_time
+            g_inSession = True
+        g_last_event_time = g_event_time
+    
+    # print("done processing queue")
+
+    if g_inSession:
+        g_now_time = time.time()
+        if g_now_time - SESSION_TIMEOUT_SEC > g_last_event_time:
+            g_inSession = False
+            print(f"Ending session #{g_session_count}")
+            print(f"\n *** OUTPUT: {g_session_count}"
+                  + "\t{g_session_note_count}"
+                  + "\t{time.ctime(g_session_start_time)}"
+                  + "\t{time.ctime(g_now_time)}")
+            g_last_event_time = g_now_time
+
+
+    # reschedule event
+    app.after(MIDI_EVENT_DELAY_MS, check_midi, app, midi_in, display)
 
 
 # app_window = build_gui()
