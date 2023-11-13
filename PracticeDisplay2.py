@@ -8,6 +8,7 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
+# import displayio
 
 FONT_SIZE_SMALL = 24
 FONT_SIZE_BIG = 48
@@ -94,6 +95,21 @@ class PracticeDisplay:
 
         # end __init__
 
+        def __del__(self):
+            print("Turning off backlight?")
+            backlight.value = False
+
+            self.disp_ = None
+            self.image_ = None
+            self.rotation_ = None
+            self.height_ = None
+            self.width_ = None
+            self.big_font_ = None
+            self.small_font_ = None
+        
+            displayio.release_displays()
+
+
     def clear_display(self):
         self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
         self.disp_.image(self.image_, self.rotation_)
@@ -127,8 +143,12 @@ class PracticeDisplay:
         self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
 
-    def show_session_number(self, session_number):
-        self.draw_text_in_white(5, f"Session: {session_number}")
+    def set_session_label(self, session_str):
+        self.draw_text_in_white(5, session_str)
+
+    def set_notes_label(self, notes_str):
+        self.draw_text_in_white(6, notes_str)
+
 
     def show_timeout(self, n_timeout):
         self.draw_text_in_color(6, f"Timeout: {n_timeout} sec", "#00FF00")

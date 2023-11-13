@@ -30,6 +30,8 @@ Something built-in/on or ? Could be a web server to a UI, or report data to a se
  simply power down the device? SOLUTION: Make filesystem read-only?
 
 ## To Do
+ * LCD display - backlight off doesn't work?
+ * Auto-select first MIDI device
  * Handle no MIDI device attached
  * Clear display when done
  
@@ -37,6 +39,18 @@ Something built-in/on or ? Could be a web server to a UI, or report data to a se
 ## Installation
 * Use a 'venv'
 * Python libs
-  * a, b, c
+  * (see 'requirements.txt')
 * Linux softare
-  * PIL ?
+  * RTMIDI backend for Mido
+      pip install --pre python-rtmidi
+      pip install mido[ports-rtmidi]
+      sudo apt-get install libasound2-dev
+      sudo apt-get install libjack-dev
+ * Adafruit Blinka
+as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
+
+ * PIL
+  * pip install pillow
+   * Adafruit Libs
+   pip install adafruit-circuitpython-rgb-display
+
