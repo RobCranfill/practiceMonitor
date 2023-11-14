@@ -16,11 +16,7 @@ BG_COLOR = "blue"
 MIDI_EVENT_DELAY_S = 0.1
 SESSION_TIMEOUT_SEC =  10
 
-# display shows
-#   RUNNING TOTAL TIME
-#   CURRENT SESSION TIME
-#   SESSION NUMBER
-#   NOTES THIS SESSION
+
 
 
 # FIXME: better with no globals - how?
@@ -58,8 +54,11 @@ def main_loop(display, midi_in):
 
         # process all events
         #
-        for msg in midi_in.iter_pending(): # non-blocking
-            print(f"msg: {msg}")
+        notes_in_queue = 0 # just for fun and debugging
+        for msg in midi_in.iter_pending(): # non-blocking queue
+
+            notes_in_queue += 1
+            print(f"{notes_in_queue}: {msg}")
 
             # OK, not *all* messages!
             if msg.type != 'note_on':
@@ -69,7 +68,7 @@ def main_loop(display, midi_in):
             g_session_note_count += 1
             display.set_notes_label(f"Notes: {g_session_note_count}")
 
-            g_event_time = time.time()
+            g_event_time = int(time.time())
 
             # start a new session?
             if not g_in_session:
@@ -85,31 +84,33 @@ def main_loop(display, midi_in):
 
             g_last_event_time = g_event_time
         
-        print("done processing queue")
+        print(f"done processing queue of {notes_in_queue}")
 
         if g_in_session:
 
-            g_now_time = time.time()
-            current_session_time = g_now_time - g_session_start_time
-            g_total_session_time += current_session_time
+            g_now_time = int(time.time())
+            if g_now_time > g_last_event_time:
 
-            display.set_time_total(format_seconds(int(g_total_session_time)))
-            display.set_time_session(format_seconds(int(current_session_time)))
+                current_session_time = g_now_time - g_session_start_time
+                g_total_session_time += current_session_time
 
-            # end session?
-            if g_now_time - SESSION_TIMEOUT_SEC > g_last_event_time:
-                g_in_session = False
+                display.set_time_total(format_seconds(int(g_total_session_time)))
+                display.set_time_session(format_seconds(int(current_session_time)))
 
-                print(f"Ending session #{g_total_session_count}")
-                print(  f"\n *** OUTPUT: {g_total_session_count}"
-                    + f"\t{g_session_note_count}"
-                    + f"\t{time.ctime(g_session_start_time)}"
-                    + f"\t{time.ctime(g_now_time)}")
-                
-                g_last_event_time = g_now_time
-                display.set_time_session_fg("black")
+                # end session?
+                if g_now_time - SESSION_TIMEOUT_SEC > g_last_event_time:
+                    g_in_session = False
 
-        print("Nothing. Sleeping")
+                    print(f"Ending session #{g_total_session_count}")
+                    print(  f"\n *** OUTPUT: {g_total_session_count}"
+                        + f"\t{g_session_note_count}"
+                        + f"\t{time.ctime(g_session_start_time)}"
+                        + f"\t{time.ctime(g_now_time)}")
+                    
+                    g_last_event_time = g_now_time
+                    display.set_time_session_fg("black")
+
+        print("Done. Sleeping")
         time.sleep(MIDI_EVENT_DELAY_S)
 
     # end main_loop
@@ -118,22 +119,31 @@ def main_loop(display, midi_in):
 pd = PracticeDisplay.PracticeDisplay()
 pd.set_session_label(f"Session: 0")
 pd.set_notes_label(f"Notes: 0")
-
 pd.set_time_session_fg("black")
 
 
 # 'MPKmini2:MPKmini2 MIDI 1 20:0'
 try:
-    inputs = mido.get_input_names()
+    
     # TODO: figure this out
-    portName = inputs[1]
+    inputs = mido.get_input_names()
+    # portName = inputs[1]
+    portName = None
+    for i in inputs:
+        if i.find("MPK") != -1:
+            portName = i
+    if portName is None:
+        print("Can't find MPK!")
+        sys.exit(1)
     print(f"Using MIDI port {portName}")
     midi_port = mido.open_input(portName)
 except Exception as e:
     print(e)
     sys.exit(1)
 
-main_loop(pd, midi_port)
-
-
-
+# Mainly for keyboard interrupt?
+try:
+    main_loop(pd, midi_port)
+except Exception as e:
+    print(e)
+    pd.set_backlight_on(False)
