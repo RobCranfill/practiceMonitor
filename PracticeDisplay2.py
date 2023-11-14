@@ -10,6 +10,7 @@ from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
 # import displayio
 
+
 FONT_SIZE_SMALL = 24
 FONT_SIZE_BIG = 48
 
@@ -149,13 +150,16 @@ class PracticeDisplay:
     def set_notes_label(self, notes_str):
         self.draw_text_in_white(6, notes_str)
 
-
     def show_timeout(self, n_timeout):
         self.draw_text_in_color(6, f"Timeout: {n_timeout} sec", "#00FF00")
 
     def set_status_blob(self, color):
         self.draw_.rectangle((5, 200, 25, 225), outline=0, fill=color)
         self.disp_.image(self.image_, self.rotation_)
+
+    def set_time_session_fg(self, fg_color_str):
+        print("\n\nDON'T KNOW HOW!\n")
+
 
 
 def test():

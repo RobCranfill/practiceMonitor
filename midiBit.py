@@ -87,6 +87,12 @@ while True:
         print("BUTTON A PRESSED!")
         button_A_was_pushed = button_A_pushed
 
+  except KeyboardInterrupt:
+     print("Done!")
+     display.clear_display()
+     display = None
+     sys.exit(1)
+
   except IOError:
     print("io error!")
     pass

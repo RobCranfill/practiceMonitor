@@ -1,15 +1,19 @@
 # PracticeMonitor for RPi Zero
 # robcranfill@gmail.com
 
+# standard libs
+import sys
 import time
 
+# installed libs
 import mido
 
+# our code
 import PracticeDisplay2 as PracticeDisplay
 
 
 BG_COLOR = "blue"
-MIDI_EVENT_DELAY_MS = 100
+MIDI_EVENT_DELAY_S = 0.1
 SESSION_TIMEOUT_SEC =  10
 
 # display shows
@@ -37,7 +41,8 @@ g_in_session = False
 def format_seconds(n_seconds):
     return f"00:{(n_seconds // 60):02}:{(n_seconds % 60):02}"
 
-def check_midi(app, midi_in, display):
+def main_loop(display, midi_in):
+
     global g_session_start_time
     global g_session_note_count
     global g_total_session_count
@@ -46,60 +51,68 @@ def check_midi(app, midi_in, display):
     global g_last_event_time
     global g_in_session
 
-    # handle all MIDI messages
-    for msg in midi_in.iter_pending():
 
-        # OK, not *all* messages!
-        if msg.type != 'note_on':
-            # print(f"* ignoring: {msg}")
-            continue
+    while True:
 
-        g_session_note_count += 1
-        display.set_notes_label(f"Notes: {g_session_note_count}")
+        print("looping")
 
-        g_event_time = time.time()
+        # process all events
+        #
+        for msg in midi_in.iter_pending(): # non-blocking
+            print(f"msg: {msg}")
 
-        # start a new session?
-        if not g_in_session:
-            g_total_session_count += 1
+            # OK, not *all* messages!
+            if msg.type != 'note_on':
+                # print(f"* ignoring: {msg}")
+                continue
 
-            print(f"Starting session #{g_total_session_count}")
-            display.set_session_label(f"Session: {g_total_session_count}")
-            display.set_time_session_fg("white")
+            g_session_note_count += 1
+            display.set_notes_label(f"Notes: {g_session_note_count}")
 
-            g_session_note_count = 1
-            g_session_start_time = g_event_time
-            g_in_session = True
+            g_event_time = time.time()
 
-        g_last_event_time = g_event_time
-    
-    # print("done processing queue")
+            # start a new session?
+            if not g_in_session:
+                g_total_session_count += 1
 
-    if g_in_session:
+                print(f"Starting session #{g_total_session_count}")
+                display.set_session_label(f"Session: {g_total_session_count}")
+                display.set_time_session_fg("white")
 
-        g_now_time = time.time()
-        current_session_time = g_now_time - g_session_start_time
-        g_total_session_time += current_session_time
+                g_session_note_count = 1
+                g_session_start_time = g_event_time
+                g_in_session = True
 
-        display.set_time_total(format_seconds(int(g_total_session_time)))
-        display.set_time_session(format_seconds(int(current_session_time)))
+            g_last_event_time = g_event_time
+        
+        print("done processing queue")
 
-        # end session?
-        if g_now_time - SESSION_TIMEOUT_SEC > g_last_event_time:
-            g_in_session = False
+        if g_in_session:
 
-            print(f"Ending session #{g_total_session_count}")
-            print(  f"\n *** OUTPUT: {g_total_session_count}"
-                  + f"\t{g_session_note_count}"
-                  + f"\t{time.ctime(g_session_start_time)}"
-                  + f"\t{time.ctime(g_now_time)}")
-            
-            g_last_event_time = g_now_time
-            display.set_time_session_fg("black")
+            g_now_time = time.time()
+            current_session_time = g_now_time - g_session_start_time
+            g_total_session_time += current_session_time
 
+            display.set_time_total(format_seconds(int(g_total_session_time)))
+            display.set_time_session(format_seconds(int(current_session_time)))
 
-    # reschedule event
-    app.after(MIDI_EVENT_DELAY_MS, check_midi, app, midi_in, display)
+            # end session?
+            if g_now_time - SESSION_TIMEOUT_SEC > g_last_event_time:
+                g_in_session = False
+
+                print(f"Ending session #{g_total_session_count}")
+                print(  f"\n *** OUTPUT: {g_total_session_count}"
+                    + f"\t{g_session_note_count}"
+                    + f"\t{time.ctime(g_session_start_time)}"
+                    + f"\t{time.ctime(g_now_time)}")
+                
+                g_last_event_time = g_now_time
+                display.set_time_session_fg("black")
+
+        print("Nothing. Sleeping")
+        time.sleep(MIDI_EVENT_DELAY_S)
+
+    # end main_loop
 
 
 pd = PracticeDisplay.PracticeDisplay()
@@ -108,12 +121,19 @@ pd.set_notes_label(f"Notes: 0")
 
 pd.set_time_session_fg("black")
 
-app_window = pd.get_root()
 
-midi_port = mido.open_input('MPKmini2:MPKmini2 MIDI 1 20:0')
+# 'MPKmini2:MPKmini2 MIDI 1 20:0'
+try:
+    inputs = mido.get_input_names()
+    # TODO: figure this out
+    portName = inputs[1]
+    print(f"Using MIDI port {portName}")
+    midi_port = mido.open_input(portName)
+except Exception as e:
+    print(e)
+    sys.exit(1)
 
-app_window.after(MIDI_EVENT_DELAY_MS, check_midi, app_window, midi_port, pd)
-app_window.mainloop()
+main_loop(pd, midi_port)
 
 
 
