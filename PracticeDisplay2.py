@@ -141,22 +141,35 @@ class PracticeDisplay:
     def draw_text_in_white(self, line_number, string):
         self.draw_text_in_color(line_number, string, "#FFFFFF")
 
-    def show_elapsed_time(self, n_seconds):
+    # def show_elapsed_time(self, n_seconds):
+    #     x = 10
+    #     y = 0
+    #     w = self.width_
+    #     h = FONT_SIZE_BIG
+
+    #     # black out old text
+    #     # print(f"showElapsedTime clearing {x}, {y}, {w}, {y+h}")
+    #     self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
+
+    #     self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
+    #     self.disp_.image(self.image_, self.rotation_)
+
+    def show_elapsed_time(self, time_str):
         x = 10
         y = 0
         w = self.width_
         h = FONT_SIZE_BIG
 
         # black out old text
-        # print(f"showElapsedTime clearing {x}, {y}, {w}, {y+h}")
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
-        self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
+        self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
 
 
     def set_time_total(self, time_str):
         print(f"set_time_session_fg {time_str}")
+        self.show_elapsed_time(time_str)
 
     def set_time_session(fself, session_str):
         print(f"set_time_session_fg {session_str}")

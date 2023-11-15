@@ -17,40 +17,26 @@ MIDI_EVENT_DELAY_S = 0.1
 SESSION_TIMEOUT_SEC =  10
 
 
-
-
-# FIXME: better with no globals - how?
-
-# for current session
-g_session_start_time = None
-g_session_note_count = 0
-
-# for all time - or as long as the app has run (TODO: persistence)
-g_total_session_count = 0
-g_total_session_time = 0
-
-g_event_time = time.time()
-g_last_event_time = 0
-g_in_session = False
-
-
 def format_seconds(n_seconds):
     return f"00:{(n_seconds // 60):02}:{(n_seconds % 60):02}"
 
 def main_loop(display, midi_in):
 
-    global g_session_start_time
-    global g_session_note_count
-    global g_total_session_count
-    global g_total_session_time
-    global g_event_time
-    global g_last_event_time
-    global g_in_session
+    # for current session
+    session_start_time = None
+    session_note_count = 0
 
+    # for all time - or as long as the app has run (TODO: persistence)
+    total_session_count = 0
+    total_practice_time = 0
+
+    event_time = int(time.time())
+    last_event_time = 0
+    in_session = False
 
     while True:
 
-        print("looping")
+        print("Looking for MIDI events...")
 
         # process all events
         #
@@ -65,52 +51,60 @@ def main_loop(display, midi_in):
                 # print(f"* ignoring: {msg}")
                 continue
 
-            g_session_note_count += 1
-            display.set_notes_label(f"Notes: {g_session_note_count}")
+            session_note_count += 1
+            display.set_notes_label(f"Notes: {session_note_count}")
 
-            g_event_time = int(time.time())
+            event_time = int(time.time())
 
             # start a new session?
-            if not g_in_session:
-                g_total_session_count += 1
+            if not in_session:
 
-                print(f"Starting session #{g_total_session_count}")
-                display.set_session_label(f"Session: {g_total_session_count}")
+                in_session = True
+                total_session_count += 1
+                print(f"Starting session #{total_session_count}")
+
+                display.set_session_label(f"Session: {total_session_count}")
                 display.set_time_session_fg("white")
 
-                g_session_note_count = 1
-                g_session_start_time = g_event_time
-                g_in_session = True
+                session_note_count = 1
+                session_start_time = event_time
 
-            g_last_event_time = g_event_time
+            last_event_time = event_time
         
-        print(f"done processing queue of {notes_in_queue}")
+        if notes_in_queue > 0:
+            print(f"done processing MIDI queue of {notes_in_queue}")
 
-        if g_in_session:
+        if in_session:
 
-            g_now_time = int(time.time())
-            if g_now_time > g_last_event_time:
+            now_time = int(time.time())
+            if now_time > last_event_time:
 
-                current_session_time = g_now_time - g_session_start_time
-                g_total_session_time += current_session_time
+                current_session_time = now_time - session_start_time
 
-                display.set_time_total(format_seconds(int(g_total_session_time)))
+                # WRONG! FIXME:
+                # ONLY UPDATE THIS WHEN SESSION ENDS
+                # total_practice_time = current_session_time
+
+                display.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
                 display.set_time_session(format_seconds(int(current_session_time)))
 
                 # end session?
-                if g_now_time - SESSION_TIMEOUT_SEC > g_last_event_time:
-                    g_in_session = False
+                if now_time - SESSION_TIMEOUT_SEC > last_event_time:
+                    in_session = False
 
-                    print(f"Ending session #{g_total_session_count}")
-                    print(  f"\n *** OUTPUT: {g_total_session_count}"
-                        + f"\t{g_session_note_count}"
-                        + f"\t{time.ctime(g_session_start_time)}"
-                        + f"\t{time.ctime(g_now_time)}")
+                    # update total_practice_time; TODO: persist this
+                    total_practice_time += current_session_time
                     
-                    g_last_event_time = g_now_time
+                    print(f"Ending session #{total_session_count}")
+                    print(  f"\n *** OUTPUT: {total_session_count}"
+                        + f"\t{session_note_count}"
+                        + f"\t{time.ctime(session_start_time)}"
+                        + f"\t{time.ctime(now_time)}")
+                    
+                    last_event_time = now_time
                     display.set_time_session_fg("black")
 
-        print("Done. Sleeping")
+        # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
 
     # end main_loop
