@@ -166,13 +166,24 @@ class PracticeDisplay:
         self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
 
+    def show_session_time(self, time_str):
+        x = 10
+        y = 50
+        w = self.width_
+        h = FONT_SIZE_BIG
+
+        # black out old text
+        self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
+
+        self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FF00")
+        self.disp_.image(self.image_, self.rotation_)
+
 
     def set_time_total(self, time_str):
-        print(f"set_time_session_fg {time_str}")
         self.show_elapsed_time(time_str)
 
-    def set_time_session(fself, session_str):
-        print(f"set_time_session {session_str}")
+    def set_time_session(self, session_str):
+        self.show_session_time(session_str)
 
     def set_time_session_fg(self, fg_color_str):
         print(f"set_time_session_fg {fg_color_str}")

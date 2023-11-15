@@ -13,7 +13,7 @@ import PracticeDisplay2 as PracticeDisplay
 
 
 BG_COLOR = "blue"
-MIDI_EVENT_DELAY_S = 0.1
+MIDI_EVENT_DELAY_S = 0.01
 SESSION_TIMEOUT_SEC =  10
 
 
@@ -81,10 +81,6 @@ def main_loop(display, midi_in):
 
                 current_session_time = now_time - session_start_time
 
-                # WRONG! FIXME:
-                # ONLY UPDATE THIS WHEN SESSION ENDS
-                # total_practice_time = current_session_time
-
                 display.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
                 display.set_time_session(format_seconds(int(current_session_time)))
 
@@ -111,8 +107,12 @@ def main_loop(display, midi_in):
 
 
 pd = PracticeDisplay.PracticeDisplay()
-pd.set_session_label(f"Session: 0")
-pd.set_notes_label(f"Notes: 0")
+
+pd.show_elapsed_time("00:00:00")
+pd.show_session_time("00:00:00")
+
+pd.set_session_label("Session: 0")
+pd.set_notes_label("Notes: 0")
 pd.set_time_session_fg("black")
 
 
