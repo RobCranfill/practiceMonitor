@@ -126,6 +126,9 @@ class PracticeDisplay:
         self.disp_.image(self.image_, self.rotation_)
 
     def draw_text_in_color(self, line_number, string, color):
+
+        debug_start = time.time()
+
         x = 0
         y = line_number * FONT_SIZE_SMALL
         w = self.width_
@@ -138,21 +141,13 @@ class PracticeDisplay:
         self.draw_.text((x, y), string, font=self.small_font_, fill=color)
         self.disp_.image(self.image_, self.rotation_)
 
+        debug_delta = time.time() - debug_start
+        print(f"Display took {debug_delta:0.2f} s")
+
+
     def draw_text_in_white(self, line_number, string):
         self.draw_text_in_color(line_number, string, "#FFFFFF")
 
-    # def show_elapsed_time(self, n_seconds):
-    #     x = 10
-    #     y = 0
-    #     w = self.width_
-    #     h = FONT_SIZE_BIG
-
-    #     # black out old text
-    #     # print(f"showElapsedTime clearing {x}, {y}, {w}, {y+h}")
-    #     self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
-
-    #     self.draw_.text((x, y), f"{pretty_time(n_seconds)}", font=self.big_font_, fill="#00FFFF")
-    #     self.disp_.image(self.image_, self.rotation_)
 
     def show_elapsed_time(self, time_str):
         x = 10
@@ -165,6 +160,7 @@ class PracticeDisplay:
 
         self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FFFF")
         self.disp_.image(self.image_, self.rotation_)
+
 
     def show_session_time(self, time_str):
         x = 10
@@ -202,9 +198,9 @@ class PracticeDisplay:
         self.disp_.image(self.image_, self.rotation_)
 
 
-
-
 def test():
+    print("\nRunning test code for PracticeDisplay....")
+
     pd = PracticeDisplay()
     pd.clear_display()
     pd.draw_text_in_color(1, "Hey Cran!",       "#FF0000")
@@ -212,9 +208,13 @@ def test():
     pd.draw_text_in_color(3, "     happening?", "#00FFFF")
     pd.draw_text_in_white(4, " okeedokee??")
     
-    print("displaying!")
-    # while True:
-    #     pass
+    print("Displaying! Press ^C to break")
+    try:
+        while True:
+            pass
+    except KeyboardInterrupt:
+        print("\nCleaning up...")
+        pd = None
 
 if __name__ == "__main__":
     test()
