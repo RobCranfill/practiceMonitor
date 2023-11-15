@@ -36,7 +36,7 @@ def main_loop(display, midi_in):
 
     while True:
 
-        print("Looking for MIDI events...")
+        # print("Looking for MIDI events...")
 
         # process all events
         #
@@ -71,8 +71,8 @@ def main_loop(display, midi_in):
 
             last_event_time = event_time
         
-        if notes_in_queue > 0:
-            print(f"done processing MIDI queue of {notes_in_queue}")
+        # if notes_in_queue > 0:
+        #     print(f"done processing MIDI queue of {notes_in_queue}")
 
         if in_session:
 

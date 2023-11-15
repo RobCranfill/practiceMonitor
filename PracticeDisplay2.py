@@ -97,12 +97,12 @@ class PracticeDisplay:
         # end __init__
 
     def set_backlight_on(self, on_state):
-        print(f"* Setting backlight {on_state}")
+        # print(f"* Setting backlight {on_state}")
         self.backlight_.value = on_state
 
     def __del__(self):
 
-        print("* Garbage-collecting display object")
+        # print("* Garbage-collecting display object")
 
         self.set_backlight_on(False)
 
@@ -172,7 +172,7 @@ class PracticeDisplay:
         self.show_elapsed_time(time_str)
 
     def set_time_session(fself, session_str):
-        print(f"set_time_session_fg {session_str}")
+        print(f"set_time_session {session_str}")
 
     def set_time_session_fg(self, fg_color_str):
         print(f"set_time_session_fg {fg_color_str}")
