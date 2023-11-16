@@ -82,10 +82,12 @@ class PracticeDisplay:
         # Fonts to use.
         # (Some other nice fonts to try: http://www.dafont.com/bitmap.php)
 
-        small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONT_SIZE_SMALL)
+        # small_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONT_SIZE_SMALL)
+        small_font = ImageFont.load_default(size=FONT_SIZE_SMALL)
         self.small_font_ = small_font
 
-        big_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONT_SIZE_BIG)
+        # big_font = ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf", FONT_SIZE_BIG)
+        big_font = ImageFont.load_default(size=FONT_SIZE_BIG)
         self.big_font_ = big_font
 
         # Connect to the backlight and turn it on.
@@ -196,6 +198,9 @@ class PracticeDisplay:
     def set_status_blob(self, color):
         self.draw_.rectangle((5, 200, 25, 225), outline=0, fill=color)
         self.disp_.image(self.image_, self.rotation_)
+
+    def set_device_name(self, device_str):
+        self.draw_text_in_color(9, device_str, "#0000FF")
 
 
 def test():

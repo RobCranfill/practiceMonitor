@@ -4,6 +4,7 @@
 # standard libs
 import sys
 import time
+import json
 
 # installed libs
 import mido
@@ -11,6 +12,11 @@ import mido
 # our code
 import PracticeDisplay2 as PracticeDisplay
 
+OUTPUT_JSON = True
+JSON_KEY_TS     = "SeshNumber"
+JSON_KEY_START  = "SeshStart"
+JSON_KEY_END    = "SeshEnd"
+JSON_KEY_NOTES  = "SeshNotes"
 
 BG_COLOR = "blue"
 MIDI_EVENT_DELAY_S = 0.01
@@ -20,11 +26,28 @@ SESSION_TIMEOUT_SEC =  10
 def format_seconds(n_seconds):
     return f"00:{(n_seconds // 60):02}:{(n_seconds % 60):02}"
 
+def output_record(total_sessions, session_start_sec, session_end_sec, session_notes):
+
+    if OUTPUT_JSON:
+        one_record = [{ JSON_KEY_TS:    total_sessions,
+                        JSON_KEY_START: time.ctime(session_start_sec),
+                        JSON_KEY_END:   time.ctime(session_end_sec),
+                        JSON_KEY_NOTES: session_notes
+                        }]
+        print(one_record)
+    else:
+        print(f"\n *** OUTPUT: {total_sessions}"
+            + f"\t{time.ctime(session_start_sec)}"
+            + f"\t{time.ctime(session_end_sec)}"
+            + f"\t{session_notes}"
+            )
+
+
 def main_loop(display, midi_in):
 
     # for current session
     session_start_time = None
-    session_note_count = 0
+    session_note_count = 0 # TODO: also total notes?
 
     # for all time - or as long as the app has run (TODO: persistence)
     total_session_count = 0
@@ -44,7 +67,7 @@ def main_loop(display, midi_in):
         for msg in midi_in.iter_pending(): # non-blocking queue
 
             notes_in_queue += 1
-            print(f"{notes_in_queue}: {msg}")
+            # print(f"{notes_in_queue}: {msg}")
 
             # OK, not *all* messages!
             if msg.type != 'note_on':
@@ -52,7 +75,7 @@ def main_loop(display, midi_in):
                 continue
 
             session_note_count += 1
-            display.set_notes_label(f"Notes: {session_note_count}")
+            # display.set_notes_label(f"Notes: {session_note_count}")
 
             event_time = int(time.time())
 
@@ -81,7 +104,7 @@ def main_loop(display, midi_in):
 
                 current_session_time = now_time - session_start_time
 
-                display.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
+                # display.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
                 display.set_time_session(format_seconds(int(current_session_time)))
 
                 # end session?
@@ -90,13 +113,13 @@ def main_loop(display, midi_in):
 
                     # update total_practice_time; TODO: persist this
                     total_practice_time += current_session_time
-                    
+                    display.set_time_total(format_seconds(total_practice_time))
+                    display.set_notes_label(f"Notes: {session_note_count}")
+
                     print(f"Ending session #{total_session_count}")
-                    print(  f"\n *** OUTPUT: {total_session_count}"
-                        + f"\t{session_note_count}"
-                        + f"\t{time.ctime(session_start_time)}"
-                        + f"\t{time.ctime(now_time)}")
-                    
+
+                    output_record(total_session_count, session_start_time, now_time, session_note_count)
+
                     last_event_time = now_time
                     display.set_time_session_fg("black")
 
@@ -131,13 +154,18 @@ try:
         sys.exit(1)
     print(f"Using MIDI port {portName}")
     midi_port = mido.open_input(portName)
+
+    # for fun:
+    pd.set_device_name(portName.split(":")[0])
+
 except Exception as e:
     print(e)
     sys.exit(1)
 
-# Mainly for keyboard interrupt?
+# Mainly for keyboard interrupt
 try:
     main_loop(pd, midi_port)
-except Exception as e:
-    print(e)
+except KeyboardInterrupt:
     pd.set_backlight_on(False)
+    print("\nDone!")
+

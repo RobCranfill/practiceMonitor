@@ -37,12 +37,12 @@ Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) 
 
 
 ## To Do
- * LCD display - backlight off doesn't work?
- * Auto-select first MIDI device
+ * Auto-select appropriate MIDI device (HOW?)
  * Handle no MIDI device attached
- * Clear display when done
-   * Catch ctrl-C ?
-
+ * Show MIDI device name on LCD
+ * <strike>LCD display - backlight off doesn't work</strike>
+ * <strike>Clear display when done</strike>
+ 
  
 ## Installation
 * Python 3.11.2 used
