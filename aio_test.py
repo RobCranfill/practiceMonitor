@@ -69,7 +69,7 @@ def generate_json_test_data():
     result = []
     t_start = time.time()
     print(f"sess#\tstart\tdur (sec)")
-    for i in range(range(random.randint(5, 15))): # 5-15 sessions
+    for i in range(random.randint(5, 15)): # 5-15 sessions
 
         t_duration = random.randint(60, 600)
         t_start += t_duration + random.randint(600, 1200)
@@ -86,22 +86,17 @@ def send_data(api_key, data):
         aio = Client("robcranfill", api_key)
         print("client OK")
 
-        # Get list of feeds and print the names, for fun.
-        feeds = aio.feeds()
-        for f in feeds:
-            print(f"Feed: {f.name}")
-
         for d in data:
             aio.send(FEED_NAME, d)
         print("send OK")
 
     except Exception as e:
         print(e)
-        print("Ouch!")
+        print("Bummer!")
 
 
 # d = generate_old_test_data()
 d = generate_json_test_data()
-print(f"Data: {d}")
+print(f"{len(d)} data points:\n{d}")
 
 send_data(api_key, d)

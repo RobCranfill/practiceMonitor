@@ -25,7 +25,9 @@ Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) 
 
 
 * Output
- * Usa [Adafruit IoT](https://io.adafruit.com/robcranfill/overview) !
+ * Use [Adafruit IoT](https://io.adafruit.com/robcranfill/overview) !
+   * Device sends session data to cloud
+   * Phone/Desktop app queries cloud and shows data analysis
  * Something built-in/on or ? 
  * Could be a web server to a UI, or report data to a server (?)
 
