@@ -43,7 +43,7 @@ Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) 
  * <strike>LCD display - backlight off doesn't work</strike>
  * <strike>Clear display when done</strike>
  
- 
+
 ## Installation
 * Python 3.11.2 used
 * Run in a 'venv' - one for PiZero, another for desktop? TODO: needed?
@@ -60,5 +60,7 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
  * PIL
   * pip install pillow
    * Adafruit Libs
-   pip install adafruit-circuitpython-rgb-display
+     * pip install adafruit-circuitpython-rgb-display
+     * IOT (Internet of Things) "pip3 install adafruit-io" see https://learn.adafruit.com/welcome-to-adafruit-io/python-and-adafruit-io
+
 
