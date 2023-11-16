@@ -4,7 +4,7 @@
 PWVAR=`cat pw.text`
 sudo mount -t cifs -o username=rob,password=$PWVAR,uid=1000,rw //pizero2w.local/home /mnt/pizero2w
 
-# ls -al /mnt/pizero2w/proj/practiceMonitor
+ls -al /mnt/pizero2w/proj/practiceMonitor
 
 cd /mnt/pizero2w/proj/practiceMonitor
 code .
