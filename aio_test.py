@@ -34,7 +34,7 @@ FEED_NAME = "perfdata"
 
 
 # not really what we want anymore
-def generate_test_data_old():
+def generate_old_test_data():
     result = []
     t_start = time.time()
     print(f"sess#\tstart\tdur (sec)")
@@ -62,13 +62,14 @@ def format_as_json(total_sessions, session_start_sec, session_end_sec, session_n
     return json.dumps(one_record)
 
 
+# create some semi-random session data
 # return a list of JSON strings: the data
 def generate_json_test_data():
 
     result = []
     t_start = time.time()
     print(f"sess#\tstart\tdur (sec)")
-    for i in range(10):
+    for i in range(range(random.randint(5, 15))): # 5-15 sessions
 
         t_duration = random.randint(60, 600)
         t_start += t_duration + random.randint(600, 1200)
@@ -99,7 +100,7 @@ def send_data(api_key, data):
         print("Ouch!")
 
 
-# d = generate_test_data()
+# d = generate_old_test_data()
 d = generate_json_test_data()
 print(f"Data: {d}")
 
