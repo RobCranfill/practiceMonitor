@@ -10,7 +10,7 @@ import json
 import mido
 
 # our code
-import PracticeDisplay2 as PracticeDisplay
+import PracticeDisplay6 as PracticeDisplay
 
 OUTPUT_JSON = True
 JSON_KEY_TS     = "SeshNumber"
@@ -43,7 +43,7 @@ def output_record(total_sessions, session_start_sec, session_end_sec, session_no
             )
 
 
-def main_loop(display, midi_in):
+def main_loop(disp, midi_port):
 
     # for current session
     session_start_time = None
@@ -59,12 +59,16 @@ def main_loop(display, midi_in):
 
     while True:
 
+        display_changed = False
+
         # print("Looking for MIDI events...")
 
         # process all events
         #
         notes_in_queue = 0 # just for fun and debugging
-        for msg in midi_in.iter_pending(): # non-blocking queue
+        queue_start = time.time()
+
+        for msg in midi_port.iter_pending(): # non-blocking queue
 
             notes_in_queue += 1
             # print(f"{notes_in_queue}: {msg}")
@@ -75,7 +79,8 @@ def main_loop(display, midi_in):
                 continue
 
             session_note_count += 1
-            # display.set_notes_label(f"Notes: {session_note_count}")
+            disp.set_notes_label(f"Notes: {session_note_count}")
+            display_changed = True
 
             event_time = int(time.time())
 
@@ -86,8 +91,9 @@ def main_loop(display, midi_in):
                 total_session_count += 1
                 print(f"Starting session #{total_session_count}")
 
-                display.set_session_label(f"Session: {total_session_count}")
-                display.set_time_session_fg("white")
+                disp.set_session_label(f"Session: {total_session_count}")
+                disp.set_time_session_fg("white")
+                display_changed = True
 
                 session_note_count = 1
                 session_start_time = event_time
@@ -96,6 +102,9 @@ def main_loop(display, midi_in):
         
         # if notes_in_queue > 0:
         #     print(f"done processing MIDI queue of {notes_in_queue}")
+        if notes_in_queue > 0:
+            print(f"Processed {notes_in_queue} in {(time.time()-queue_start):0.2f}")
+
 
         if in_session:
 
@@ -104,8 +113,9 @@ def main_loop(display, midi_in):
 
                 current_session_time = now_time - session_start_time
 
-                # display.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
-                display.set_time_session(format_seconds(int(current_session_time)))
+                # disp.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
+                disp.set_time_session(format_seconds(int(current_session_time)))
+                display_changed = True
 
                 # end session?
                 if now_time - SESSION_TIMEOUT_SEC > last_event_time:
@@ -113,15 +123,18 @@ def main_loop(display, midi_in):
 
                     # update total_practice_time; TODO: persist this
                     total_practice_time += current_session_time
-                    display.set_time_total(format_seconds(total_practice_time))
-                    display.set_notes_label(f"Notes: {session_note_count}")
+                    disp.set_time_total(format_seconds(total_practice_time))
+                    disp.set_notes_label(f"Notes: {session_note_count}")
 
                     print(f"Ending session #{total_session_count}")
 
                     output_record(total_session_count, session_start_time, now_time, session_note_count)
 
                     last_event_time = now_time
-                    display.set_time_session_fg("black")
+                    disp.set_time_session_fg("black")
+
+        if display_changed:
+            display.update_display()
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
@@ -129,20 +142,23 @@ def main_loop(display, midi_in):
     # end main_loop
 
 
-pd = PracticeDisplay.PracticeDisplay()
+display = PracticeDisplay.PracticeDisplay()
 
-pd.show_elapsed_time("00:00:00")
-pd.show_session_time("00:00:00")
+display.show_elapsed_time("00:00:00")
+display.show_session_time("00:00:00")
 
-pd.set_session_label("Session: 0")
-pd.set_notes_label("Notes: 0")
-pd.set_time_session_fg("black")
+display.set_session_label("Session: 0")
+display.set_notes_label("Notes: 0")
+display.set_time_session_fg("black")
 
 
 # 'MPKmini2:MPKmini2 MIDI 1 20:0'
 try:
     
-    # TODO: figure this out
+    # Get the proper MIDI input port.
+    # There is a system one that we *don't* want.
+    # TODO: figure this out. Maybe just *exclude* the "thru" port?
+    #
     inputs = mido.get_input_names()
     # portName = inputs[1]
     portName = None
@@ -156,7 +172,7 @@ try:
     midi_port = mido.open_input(portName)
 
     # for fun:
-    pd.set_device_name(portName.split(":")[0])
+    display.set_device_name(portName.split(":")[0])
 
 except Exception as e:
     print(e)
@@ -164,8 +180,7 @@ except Exception as e:
 
 # Mainly for keyboard interrupt
 try:
-    main_loop(pd, midi_port)
+    main_loop(display, midi_port)
 except KeyboardInterrupt:
-    pd.set_backlight_on(False)
+    display.set_backlight_on(False)
     print("\nDone!")
-

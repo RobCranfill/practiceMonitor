@@ -1,6 +1,6 @@
 # PracticeDisplay object for MIDIbit project
 # robcranfill
-# Based on Adafruit code by ladyada, but repaining only when needed
+# Based on Adafruit code by ladyada, but repainting only when needed
 
 import time
 import digitalio
@@ -21,12 +21,6 @@ FONT_SIZE_BIG   = 48
 FONT_SIZE_SMALL = 24
 
 
-def pretty_time(secs):
-    h = 0
-    m = int(secs // 60)
-    s = int(secs  % 60)
-    return (f"{h:02}:{m:02}:{s:02}")
-
 class PracticeDisplay:
 
     def __init__(self):
@@ -36,7 +30,7 @@ class PracticeDisplay:
         dc_pin = digitalio.DigitalInOut(board.D25)
         reset_pin = None
 
-        # Config for display baudrate (default max is 24mhz)
+        # Display baudrate (default max is 24mhz)
         BAUDRATE = 64000000
 
         # Setup SPI bus using hardware SPI
@@ -55,7 +49,7 @@ class PracticeDisplay:
             y_offset=80,
             )
         
-        # hang onto this
+        # hang onto this...
         self.disp_ = disp
 
         # Create blank image for drawing.
@@ -65,7 +59,7 @@ class PracticeDisplay:
         image = Image.new("RGB", (width, height))
         rotation = 0
 
-        # and these
+        # ...and these
         self.image_ = image
         self.rotation_ = rotation
         self.height_ = height
@@ -127,9 +121,17 @@ class PracticeDisplay:
         self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
         self.disp_.image(self.image_, self.rotation_)
 
+
+    # paint all the changes that have been made
+    def update_display(self):
+        start = time.time()
+        self.disp_.image(self.image_, self.rotation_)
+        print(f"update_display: {(time.time() - start):0.2f} s")
+
+
     def draw_text_in_color(self, line_number, string, color):
 
-        debug_start = time.time()
+        start = time.time()
 
         x = 0
         y = line_number * FONT_SIZE_SMALL
@@ -141,10 +143,9 @@ class PracticeDisplay:
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
         self.draw_.text((x, y), string, font=self.small_font_, fill=color)
-        self.disp_.image(self.image_, self.rotation_)
+        # self.disp_.image(self.image_, self.rotation_)
 
-        debug_delta = time.time() - debug_start
-        print(f"Display took {debug_delta:0.2f} s")
+        print(f"draw_text_in_color: {(time.time() - start):0.2f} s")
 
 
     def draw_text_in_white(self, line_number, string):
@@ -161,7 +162,7 @@ class PracticeDisplay:
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
         self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FFFF")
-        self.disp_.image(self.image_, self.rotation_)
+        # self.disp_.image(self.image_, self.rotation_)
 
 
     def show_session_time(self, time_str):
@@ -174,7 +175,7 @@ class PracticeDisplay:
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
         self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FF00")
-        self.disp_.image(self.image_, self.rotation_)
+        # self.disp_.image(self.image_, self.rotation_)
 
 
     def set_time_total(self, time_str):
@@ -197,7 +198,7 @@ class PracticeDisplay:
 
     def set_status_blob(self, color):
         self.draw_.rectangle((5, 200, 25, 225), outline=0, fill=color)
-        self.disp_.image(self.image_, self.rotation_)
+        # self.disp_.image(self.image_, self.rotation_)
 
     def set_device_name(self, device_str):
         self.draw_text_in_color(9, device_str, "#0000FF")
