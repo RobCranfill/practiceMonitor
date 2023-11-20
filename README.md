@@ -66,3 +66,16 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
      * IOT (Internet of Things) "pip3 install adafruit-io" see https://learn.adafruit.com/welcome-to-adafruit-io/python-and-adafruit-io
 
 
+
+
+## Linux service
+
+/lib/systemd/system/pmz.service
+
+  sudo chmod 644 /lib/systemd/system/pmz.service
+  
+  sudo systemctl daemon-reload
+  sudo systemctl enable pmz.service
+  sudo systemctl start  pmz.service
+  sudo systemctl stop   pmz.service
+  sudo systemctl status pmz.service 

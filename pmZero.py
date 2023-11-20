@@ -57,6 +57,8 @@ def main_loop(disp, midi_port):
     last_event_time = 0
     in_session = False
 
+    display.update_display()
+
     while True:
 
         display_changed = False
@@ -156,17 +158,18 @@ display.set_time_session_fg("black")
 try:
     
     # Get the proper MIDI input port.
-    # There is a system one that we *don't* want.
-    # TODO: figure this out. Maybe just *exclude* the "thru" port?
+    # Use the first one other than the system "Through" port.
     #
     inputs = mido.get_input_names()
-    # portName = inputs[1]
+    print(f" ports: {inputs}")
+
     portName = None
-    for i in inputs:
-        if i.find("MPK") != -1:
-            portName = i
+    for pName in inputs:
+        if pName.find("Through") == -1:
+            portName = pName
+            break
     if portName is None:
-        print("Can't find MPK!")
+        print("Can't find non-Through port!")
         sys.exit(1)
     print(f"Using MIDI port {portName}")
     midi_port = mido.open_input(portName)

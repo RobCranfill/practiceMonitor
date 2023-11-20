@@ -1,0 +1,11 @@
+[Unit]
+Description=Performance Monitor
+After=multi-user.target
+
+[Service]
+Type=simple
+ExecStart=/home/rob/proj/practiceMonitor/run/runPMZ.sh
+Restart=on-abort
+
+[Install]
+WantedBy=multi-user.target
