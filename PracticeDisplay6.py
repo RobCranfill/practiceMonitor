@@ -28,6 +28,10 @@ ELAPSED_TIME_Y = 50
 SESSION_TIME_Y = 00
 
 
+def format_seconds(n_seconds):
+    return f"00:{(n_seconds // 60):02}:{(n_seconds % 60):02}"
+
+
 class PracticeDisplay:
 
     def __init__(self):
@@ -99,6 +103,7 @@ class PracticeDisplay:
 
         # end __init__
 
+
     def set_backlight_on(self, on_state):
         # print(f"* Setting backlight {on_state}")
         self.backlight_.value = on_state
@@ -162,7 +167,7 @@ class PracticeDisplay:
         self.draw_text_in_color(line_number, string, "#FFFFFF")
 
 
-    def show_elapsed_time(self, time_str):
+    def show_elapsed_time(self, n_seconds):
         x = 10
         y = ELAPSED_TIME_Y
         w = self.width_
@@ -171,11 +176,11 @@ class PracticeDisplay:
         # black out old text
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
-        self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FFFF")
+        self.draw_.text((x, y), format_seconds(n_seconds), font=self.big_font_, fill="#00FFFF")
         # self.disp_.image(self.image_, self.rotation_)
 
 
-    def show_session_time(self, time_str):
+    def show_session_time(self, n_seconds):
         x = 10
         y = SESSION_TIME_Y
         w = self.width_
@@ -184,15 +189,15 @@ class PracticeDisplay:
         # black out old text
         self.draw_.rectangle((0, y, w, y+h), outline=0, fill="#000000")
 
-        self.draw_.text((x, y), time_str, font=self.big_font_, fill="#00FF00")
+        self.draw_.text((x, y), format_seconds(n_seconds), font=self.big_font_, fill="#00FF00")
         # self.disp_.image(self.image_, self.rotation_)
 
 
-    def set_time_total(self, time_str):
-        self.show_elapsed_time(time_str)
+    # def set_time_total(self, time_str):
+    #     self.show_elapsed_time(time_str)
 
-    def set_time_session(self, session_str):
-        self.show_session_time(session_str)
+    # def set_time_session(self, session_str):
+    #     self.show_session_time(session_str)
 
     def set_time_session_fg(self, fg_color_str):
         print(f"set_time_session_fg {fg_color_str}")
@@ -211,7 +216,7 @@ class PracticeDisplay:
         # self.disp_.image(self.image_, self.rotation_)
 
     def set_device_name(self, device_str):
-        self.draw_text_in_color(9, device_str, "#0000FF")
+        self.draw_text_in_color(9, device_str, "#00FF00")
 
 
 def test():

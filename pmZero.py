@@ -34,10 +34,6 @@ signal.signal(signal.SIGINT,  handler_stop_signals)
 signal.signal(signal.SIGTERM, handler_stop_signals)
 
 
-
-def format_seconds(n_seconds):
-    return f"00:{(n_seconds // 60):02}:{(n_seconds % 60):02}"
-
 def output_record(total_sessions, session_start_sec, session_end_sec, session_notes):
 
     if OUTPUT_JSON:
@@ -106,7 +102,7 @@ def main_loop(disp, midi_port):
                 total_session_count += 1
                 print(f"Starting session #{total_session_count}")
 
-                disp.set_session_label(f"Session: {total_session_count}")
+                disp.set_session_label(f"Session {total_session_count}")
                 disp.set_time_session_fg("white")
                 display_changed = True
 
@@ -128,8 +124,8 @@ def main_loop(disp, midi_port):
 
                 current_session_time = now_time - session_start_time
 
-                # disp.set_time_total(format_seconds(int(total_practice_time + current_session_time)))
-                disp.set_time_session(format_seconds(int(current_session_time)))
+                disp.show_elapsed_time(int(total_practice_time + current_session_time))
+                disp.show_session_time(int(current_session_time))
                 display_changed = True
 
                 # end session?
@@ -138,7 +134,7 @@ def main_loop(disp, midi_port):
 
                     # update total_practice_time; TODO: persist this
                     total_practice_time += current_session_time
-                    disp.set_time_total(format_seconds(total_practice_time))
+                    disp.show_elapsed_time(total_practice_time)
                     disp.set_notes_label(f"Notes: {session_note_count}")
 
                     print(f"Ending session #{total_session_count}")
@@ -175,12 +171,12 @@ if __name__ == "__main__":
 
     display = PracticeDisplay.PracticeDisplay()
 
-    display.show_elapsed_time("00:00:00")
-    display.show_session_time("00:00:00")
+    display.show_elapsed_time(0)
+    display.show_session_time(0)
 
     display.set_session_label("Session: 0")
     display.set_notes_label("Notes: 0")
-    display.set_time_session_fg("black")
+    # display.set_time_session_fg("black")
 
 
     # 'MPKmini2:MPKmini2 MIDI 1 20:0'
