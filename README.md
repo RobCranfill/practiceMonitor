@@ -39,16 +39,18 @@ Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) 
 
 
 ## To Do
- * Auto-select appropriate MIDI device (HOW?)
+ * Handle SIGINT &c (blank screen, etc)
  * Handle no MIDI device attached
- * Show MIDI device name on LCD
- * <strike>LCD display - backlight off doesn't work</strike>
- * <strike>Clear display when done</strike>
+ * Done:
+   * <strike>Show MIDI device name on LCD</strike>
+   * <strike>LCD display - backlight off doesn't work</strike>
+   * <strike>Clear display when done</strike>
+   * <strike>Auto-select appropriate MIDI device (HOW?)</strike>
  
 
 ## Installation
 * Python 3.11.2 used
-* Run in a 'venv' - one for PiZero, another for desktop? TODO: needed?
+* Run in a 'venv' - one for PiZero, another for desktop (don't need TK stuff on Pi)
 * Python libs
   * (see 'requirements.txt')
 * Linux softare
@@ -66,10 +68,10 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
      * IOT (Internet of Things) "pip3 install adafruit-io" see https://learn.adafruit.com/welcome-to-adafruit-io/python-and-adafruit-io
 
 
-
-
 ## Linux service
 
+* TODO:
+  * 
 /lib/systemd/system/pmz.service
 
   sudo chmod 644 /lib/systemd/system/pmz.service

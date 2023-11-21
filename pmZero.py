@@ -144,46 +144,62 @@ def main_loop(disp, midi_port):
     # end main_loop
 
 
-display = PracticeDisplay.PracticeDisplay()
+if __name__ == "__main__":
 
-display.show_elapsed_time("00:00:00")
-display.show_session_time("00:00:00")
-
-display.set_session_label("Session: 0")
-display.set_notes_label("Notes: 0")
-display.set_time_session_fg("black")
-
-
-# 'MPKmini2:MPKmini2 MIDI 1 20:0'
-try:
+    # def testF(n):
+    #     print(f"Format {n}: {format_seconds(n)}")
     
-    # Get the proper MIDI input port.
-    # Use the first one other than the system "Through" port.
-    #
-    inputs = mido.get_input_names()
-    print(f" ports: {inputs}")
+    # testF(1)
+    # testF(10)
+    # testF(100)
+    # testF(200)
+    # testF(300)
+    # testF(1000)
+    # testF(2000)
+    
+    # sys.exit(1)
 
-    portName = None
-    for pName in inputs:
-        if pName.find("Through") == -1:
-            portName = pName
-            break
-    if portName is None:
-        print("Can't find non-Through port!")
+
+    display = PracticeDisplay.PracticeDisplay()
+
+    display.show_elapsed_time("00:00:00")
+    display.show_session_time("00:00:00")
+
+    display.set_session_label("Session: 0")
+    display.set_notes_label("Notes: 0")
+    display.set_time_session_fg("black")
+
+
+    # 'MPKmini2:MPKmini2 MIDI 1 20:0'
+    try:
+        
+        # Get the proper MIDI input port.
+        # Use the first one other than the system "Through" port.
+        #
+        inputs = mido.get_input_names()
+        print(f" ports: {inputs}")
+
+        portName = None
+        for pName in inputs:
+            if pName.find("Through") == -1:
+                portName = pName
+                break
+        if portName is None:
+            print("Can't find non-Through port!")
+            sys.exit(1)
+        print(f"Using MIDI port {portName}")
+        midi_port = mido.open_input(portName)
+
+        # for fun:
+        display.set_device_name(portName.split(":")[0])
+
+    except Exception as e:
+        print(e)
         sys.exit(1)
-    print(f"Using MIDI port {portName}")
-    midi_port = mido.open_input(portName)
 
-    # for fun:
-    display.set_device_name(portName.split(":")[0])
-
-except Exception as e:
-    print(e)
-    sys.exit(1)
-
-# Mainly for keyboard interrupt
-try:
-    main_loop(display, midi_port)
-except KeyboardInterrupt:
-    display.set_backlight_on(False)
-    print("\nDone!")
+    # Mainly for keyboard interrupt
+    try:
+        main_loop(display, midi_port)
+    except KeyboardInterrupt:
+        display.set_backlight_on(False)
+        print("\nDone!")

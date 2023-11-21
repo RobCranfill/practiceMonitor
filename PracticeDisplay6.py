@@ -10,15 +10,22 @@ from adafruit_rgb_display import st7789
 # import displayio
 
 
-# display shows
-#   RUNNING TOTAL TIME    in 48 pt
-#   CURRENT SESSION TIME  in 24 pt
-#   SESSION NUMBER          "
-#   NOTES THIS SESSION      "
+# Display:
+#
+#   CURRENT SESSION TIME  in big font
+#   RUNNING TOTAL TIME    in big font
+#   SESSION NUMBER        in small font
+#   NOTES THIS SESSION    in small font
+#
+#
+#   Device name           small
 
 
 FONT_SIZE_BIG   = 48
 FONT_SIZE_SMALL = 24
+
+ELAPSED_TIME_Y = 50
+SESSION_TIME_Y = 00
 
 
 class PracticeDisplay:
@@ -124,9 +131,12 @@ class PracticeDisplay:
 
     # paint all the changes that have been made
     def update_display(self):
-        start = time.time()
+
+        # FIXME: This takes 0.6 seconds!
+
+        # start = time.time()
         self.disp_.image(self.image_, self.rotation_)
-        print(f"update_display: {(time.time() - start):0.2f} s")
+        # print(f"update_display: {(time.time() - start):0.2f} s")
 
 
     def draw_text_in_color(self, line_number, string, color):
@@ -145,7 +155,7 @@ class PracticeDisplay:
         self.draw_.text((x, y), string, font=self.small_font_, fill=color)
         # self.disp_.image(self.image_, self.rotation_)
 
-        print(f"draw_text_in_color: {(time.time() - start):0.2f} s")
+        # print(f"draw_text_in_color: {(time.time() - start):0.2f} s")
 
 
     def draw_text_in_white(self, line_number, string):
@@ -154,7 +164,7 @@ class PracticeDisplay:
 
     def show_elapsed_time(self, time_str):
         x = 10
-        y = 0
+        y = ELAPSED_TIME_Y
         w = self.width_
         h = FONT_SIZE_BIG
 
@@ -167,7 +177,7 @@ class PracticeDisplay:
 
     def show_session_time(self, time_str):
         x = 10
-        y = 50
+        y = SESSION_TIME_Y
         w = self.width_
         h = FONT_SIZE_BIG
 
