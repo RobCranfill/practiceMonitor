@@ -2,9 +2,10 @@
 # robcranfill@gmail.com
 
 # standard libs
+import json
+import signal
 import sys
 import time
-import json
 
 # installed libs
 import mido
@@ -21,6 +22,17 @@ JSON_KEY_NOTES  = "SeshNotes"
 BG_COLOR = "blue"
 MIDI_EVENT_DELAY_S = 0.01
 SESSION_TIMEOUT_SEC =  10
+
+g_run = True
+
+def handler_stop_signals(signum, frame):
+    global g_run
+    print(f"Caught signal {signum}. Stopping.")
+    g_run = False
+
+signal.signal(signal.SIGINT,  handler_stop_signals)
+signal.signal(signal.SIGTERM, handler_stop_signals)
+
 
 
 def format_seconds(n_seconds):
@@ -44,6 +56,7 @@ def output_record(total_sessions, session_start_sec, session_end_sec, session_no
 
 
 def main_loop(disp, midi_port):
+    global g_run
 
     # for current session
     session_start_time = None
@@ -59,7 +72,7 @@ def main_loop(disp, midi_port):
 
     display.update_display()
 
-    while True:
+    while g_run and True:
 
         display_changed = False
 

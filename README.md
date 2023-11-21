@@ -39,13 +39,14 @@ Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) 
 
 
 ## To Do
- * Handle SIGINT &c (blank screen, etc)
  * Handle no MIDI device attached
- * Done:
-   * <strike>Show MIDI device name on LCD</strike>
-   * <strike>LCD display - backlight off doesn't work</strike>
-   * <strike>Clear display when done</strike>
-   * <strike>Auto-select appropriate MIDI device (HOW?)</strike>
+ * Done:<strike>
+   * Handle SIGTERM/INT &c (blank screen, etc)
+   * Show MIDI device name on LCD
+   * LCD display - backlight off doesn't work
+   * Clear display when done
+   * Auto-select appropriate MIDI device (HOW?)
+   </strike>
  
 
 ## Installation
