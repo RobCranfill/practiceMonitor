@@ -14,7 +14,7 @@ import digitalio
 import mido
 
 # our code
-import PracticeDisplay6 as PracticeDisplay
+import PracticeDisplayLCD as PracticeDisplay
 
 OUTPUT_JSON = True
 JSON_KEY_TS     = "SeshNumber"
