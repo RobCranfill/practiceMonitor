@@ -3,11 +3,14 @@
 
 # standard libs
 import json
+import os
 import signal
 import sys
 import time
 
 # installed libs
+import board
+import digitalio
 import mido
 
 # our code
@@ -25,13 +28,13 @@ SESSION_TIMEOUT_SEC =  10
 
 g_run = True
 
-def handler_stop_signals(signum, frame):
+def interrupt_handler(signum, frame):
     global g_run
     print(f"Caught signal {signum}. Stopping.")
     g_run = False
 
-signal.signal(signal.SIGINT,  handler_stop_signals)
-signal.signal(signal.SIGTERM, handler_stop_signals)
+signal.signal(signal.SIGINT,  interrupt_handler)
+signal.signal(signal.SIGTERM, interrupt_handler)
 
 
 def output_record(total_sessions, session_start_sec, session_end_sec, session_notes):
@@ -51,8 +54,24 @@ def output_record(total_sessions, session_start_sec, session_end_sec, session_no
             )
 
 
+def set_up_shutdown_button():
+    button_23 = digitalio.DigitalInOut(board.D23)
+    button_23.switch_to_input()
+    return button_23
+
+def check_shutdown_button(b):
+    pushed = not b.value
+    print(f"Button? {pushed}")
+    if pushed:
+        print("SHUT THE F DOWN!")
+        return True
+    return False
+
+
 def main_loop(disp, midi_port):
     global g_run
+
+    shutdown_button = set_up_shutdown_button()
 
     # for current session
     session_start_time = None
@@ -147,6 +166,9 @@ def main_loop(disp, midi_port):
         if display_changed:
             display.update_display()
 
+        if check_shutdown_button(shutdown_button):
+            os.system('sudo poweroff')
+
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
 
@@ -155,38 +177,22 @@ def main_loop(disp, midi_port):
 
 if __name__ == "__main__":
 
-    # def testF(n):
-    #     print(f"Format {n}: {format_seconds(n)}")
-    
-    # testF(1)
-    # testF(10)
-    # testF(100)
-    # testF(200)
-    # testF(300)
-    # testF(1000)
-    # testF(2000)
-    
-    # sys.exit(1)
-
-
     display = PracticeDisplay.PracticeDisplay()
 
     display.show_elapsed_time(0)
     display.show_session_time(0)
-
     display.set_session_label("Session: 0")
     display.set_notes_label("Notes: 0")
     # display.set_time_session_fg("black")
 
 
-    # 'MPKmini2:MPKmini2 MIDI 1 20:0'
     try:
         
         # Get the proper MIDI input port.
         # Use the first one other than the system "Through" port.
         #
         inputs = mido.get_input_names()
-        print(f" ports: {inputs}")
+        # print(f" ports: {inputs}")
 
         portName = None
         for pName in inputs:
@@ -199,7 +205,7 @@ if __name__ == "__main__":
         print(f"Using MIDI port {portName}")
         midi_port = mido.open_input(portName)
 
-        # for fun:
+        # show the device connected to
         display.set_device_name(portName.split(":")[0])
 
     except Exception as e:
