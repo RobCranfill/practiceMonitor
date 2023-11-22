@@ -167,6 +167,11 @@ def main_loop(disp, midi_port):
             display.update_display()
 
         if check_shutdown_button(shutdown_button):
+
+            # If running from console, gives time to hit <ctrl>C 
+            print("Shutting down in 10:")
+            for i in range(10):
+                print(f"{i}...")
             os.system('sudo poweroff')
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
