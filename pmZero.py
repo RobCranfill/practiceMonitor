@@ -16,6 +16,8 @@ import mido
 # our code
 import PracticeDisplayLCD as PracticeDisplay
 
+
+# pseudo-constants
 OUTPUT_JSON = True
 JSON_KEY_TS     = "SeshNumber"
 JSON_KEY_START  = "SeshStart"
@@ -26,6 +28,8 @@ BG_COLOR = "blue"
 MIDI_EVENT_DELAY_S = 0.01
 SESSION_TIMEOUT_SEC =  10
 
+
+# global flag to keep running or die; for SIGTERM
 g_run = True
 
 def interrupt_handler(signum, frame):
@@ -65,9 +69,9 @@ def check_shutdown_button(b):
     # print(f"Button? {pushed}")
     if pushed:
         # If running from console, gives time to hit <ctrl>C 
-        print("Shutting down in 10:")
-        for i in range(10):
-            print(f"{i}...")
+        print("Shutting down in 10! ^C to abort!")
+        for i in range(10, 0, -1):
+            print(f"  {i}...")
             time.sleep(1)
         os.system('sudo poweroff')
 
@@ -75,7 +79,7 @@ def check_shutdown_button(b):
 def main_loop(disp, midi_port):
     global g_run
 
-    # shutdown_button = set_up_shutdown_button()
+    shutdown_button = set_up_shutdown_button()
 
     # for current session
     session_start_time = None
@@ -137,7 +141,7 @@ def main_loop(disp, midi_port):
         # if notes_in_queue > 0:
         #     print(f"done processing MIDI queue of {notes_in_queue}")
         if notes_in_queue > 0:
-            print(f"Processed {notes_in_queue} in {(time.time()-queue_start):0.2f}")
+            print(f"Processed {notes_in_queue} MIDI notes in {(time.time()-queue_start):0.2f}")
 
 
         if in_session:
@@ -174,7 +178,7 @@ def main_loop(disp, midi_port):
         if display_changed:
             display.update_display()
 
-        # check_shutdown_button(shutdown_button)
+        check_shutdown_button(shutdown_button)
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
