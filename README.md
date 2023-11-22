@@ -55,34 +55,32 @@ Except it's *slow*! Either find a workaround or find a replacement display.
 
 ## Installation
 * Python 3.11.2 used
-* Run in a 'venv' - one for PiZero, another for desktop (don't need TK stuff on Pi)
+* Run in a 'venv' - one for PiZero <strike>, another for desktop (don't need TK stuff on Pi)</strike>
 * Python libs
   * (see 'requirements.txt')
 * Linux softare
-  * RTMIDI backend for Mido
-      pip install --pre python-rtmidi
-      pip install mido[ports-rtmidi]
-      sudo apt-get install libasound2-dev
-      sudo apt-get install libjack-dev
+  * RTMIDI backend for Mido<code>
+    * pip install --pre python-rtmidi
+    * pip install mido[ports-rtmidi]
+    * sudo apt-get install libasound2-dev
+    * sudo apt-get install libjack-dev</code>
  * Adafruit Blinka
 as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-circuitpython-on-raspberry-pi
  * PIL
   * pip install pillow
    * Adafruit Libs
      * pip install adafruit-circuitpython-rgb-display
-     * IOT (Internet of Things) "pip3 install adafruit-io" see https://learn.adafruit.com/welcome-to-adafruit-io/python-and-adafruit-io
+     * IOT (Internet of Things) 
+       * <code>pip3 install adafruit-io</code>
+       * see https://learn.adafruit.com/welcome-to-adafruit-io/python-and-adafruit-io
 
 
 ## Linux service
-
 * TODO:
-  * 
-/lib/systemd/system/pmz.service
+  * How to check if service already running? (For running from command line)
 
-  sudo chmod 644 /lib/systemd/system/pmz.service
-  
-  sudo systemctl daemon-reload
-  sudo systemctl enable pmz.service
-  sudo systemctl start  pmz.service
-  sudo systemctl stop   pmz.service
-  sudo systemctl status pmz.service 
+* Notes:
+  * script at /lib/systemd/system/pmz.service
+    * <code>sudo chmod 644 /lib/systemd/system/pmz.service</code>
+  * <code>sudo systemctl daemon-reload</code>
+  * <code>sudo systemctl [enable|disable|start|stop|status] pmz.service</code>

@@ -3,8 +3,8 @@
 # arg[1] = {"start", "stop", "status", "enable", "disable"}
 
 if [ "$#" -ne 1 ]; then
-    echo '{"start", "stop", "status", "enable", "disable"}'
+    echo '{"enable", "disable", "start", "stop", "status"}'
     exit 1
 fi
 
-systemctl $1 pmz.service
+sudo systemctl $1 pmz.service
