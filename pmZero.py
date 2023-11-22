@@ -33,7 +33,8 @@ def interrupt_handler(signum, frame):
     print(f"Caught signal {signum}. Stopping.")
     g_run = False
 
-signal.signal(signal.SIGINT,  interrupt_handler)
+# only need SIGTERM for service?
+# signal.signal(signal.SIGINT,  interrupt_handler)
 signal.signal(signal.SIGTERM, interrupt_handler)
 
 
@@ -61,17 +62,20 @@ def set_up_shutdown_button():
 
 def check_shutdown_button(b):
     pushed = not b.value
-    print(f"Button? {pushed}")
+    # print(f"Button? {pushed}")
     if pushed:
-        print("SHUT THE F DOWN!")
-        return True
-    return False
+        # If running from console, gives time to hit <ctrl>C 
+        print("Shutting down in 10:")
+        for i in range(10):
+            print(f"{i}...")
+            time.sleep(1)
+        os.system('sudo poweroff')
 
 
 def main_loop(disp, midi_port):
     global g_run
 
-    shutdown_button = set_up_shutdown_button()
+    # shutdown_button = set_up_shutdown_button()
 
     # for current session
     session_start_time = None
@@ -122,7 +126,7 @@ def main_loop(disp, midi_port):
                 print(f"Starting session #{total_session_count}")
 
                 disp.set_session_label(f"Session {total_session_count}")
-                disp.set_time_session_fg("white")
+                # disp.set_time_session_fg("white")
                 display_changed = True
 
                 session_note_count = 1
@@ -143,7 +147,9 @@ def main_loop(disp, midi_port):
 
                 current_session_time = now_time - session_start_time
 
-                disp.show_elapsed_time(int(total_practice_time + current_session_time))
+                # FIXME: this is wrong. so wrong.
+                # disp.show_elapsed_time(int(total_practice_time + current_session_time))
+
                 disp.show_session_time(int(current_session_time))
                 display_changed = True
 
@@ -161,19 +167,14 @@ def main_loop(disp, midi_port):
                     output_record(total_session_count, session_start_time, now_time, session_note_count)
 
                     last_event_time = now_time
-                    disp.set_time_session_fg("black")
+
+                    # WTF was this?
+                    # disp.set_time_session_fg("black")
 
         if display_changed:
             display.update_display()
 
-        if check_shutdown_button(shutdown_button):
-
-            # If running from console, gives time to hit <ctrl>C 
-            print("Shutting down in 10:")
-            for i in range(10):
-                print(f"{i}...")
-                time.sleep(1)
-            os.system('sudo poweroff')
+        # check_shutdown_button(shutdown_button)
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)

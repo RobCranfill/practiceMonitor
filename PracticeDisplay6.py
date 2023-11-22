@@ -105,12 +105,12 @@ class PracticeDisplay:
 
 
     def set_backlight_on(self, on_state):
-        # print(f"* Setting backlight {on_state}")
+        print(f"* Setting backlight {'on' if on_state else 'off'}")
         self.backlight_.value = on_state
 
     def __del__(self):
 
-        # print("* Garbage-collecting display object")
+        print("* Garbage-collecting display object")
 
         self.set_backlight_on(False)
 
