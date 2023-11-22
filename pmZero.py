@@ -172,6 +172,7 @@ def main_loop(disp, midi_port):
             print("Shutting down in 10:")
             for i in range(10):
                 print(f"{i}...")
+                time.sleep(1)
             os.system('sudo poweroff')
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
