@@ -64,19 +64,30 @@ def set_up_shutdown_button():
     button_23.switch_to_input()
     return button_23
 
-def check_shutdown_button(b):
+def check_shutdown_button(b, d):
     pushed = not b.value
     # print(f"Button? {pushed}")
     if pushed:
         # If running from console, gives time to hit <ctrl>C 
         print("Shutting down in 10! ^C to abort!")
+
+        d.draw_text_in_color(4, "shutting down!", "#FF0000")
+        d.update_display()
+
         for i in range(10, 0, -1):
             print(f"  {i}...")
             time.sleep(1)
             pushed = not b.value
             if pushed:
                 print("\nAborting shutdown!")
+                d.draw_text_in_color(4, "aborting shutdown!", "#00FF00")
+                d.update_display()
+
                 time.sleep(1) # debounce
+                
+                d.draw_text_in_color(4, "", "#000000")
+                d.update_display()
+
                 return
         os.system('sudo poweroff')
 
@@ -183,7 +194,7 @@ def main_loop(disp, midi_port):
         if display_changed:
             display.update_display()
 
-        check_shutdown_button(shutdown_button)
+        check_shutdown_button(shutdown_button, disp)
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)

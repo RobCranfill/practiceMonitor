@@ -11,8 +11,8 @@ Eventually create a front-end &ndash; app? website? &ndash; to slice and dice th
 
 ## Main Hardware
 We need something that can act as a MIDI/USB "host". This seems to be problematic
-for anything smaller than a Raspberry Pi Zero, which is what I'm using now )Zero2W).
-I was hoping to use a Pi Pico or the like, but USB Host cap[ability is poorly
+for anything smaller than a Raspberry Pi Zero, which is what I'm using now (Zero2W).
+I was hoping to use a Pi Pico or the like, but USB Host capability is poorly
 supported (in CircuitPython anyway). 
 
 
