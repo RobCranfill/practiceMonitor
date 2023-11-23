@@ -73,6 +73,11 @@ def check_shutdown_button(b):
         for i in range(10, 0, -1):
             print(f"  {i}...")
             time.sleep(1)
+            pushed = not b.value
+            if pushed:
+                print("\nAborting shutdown!")
+                time.sleep(1) # debounce
+                return
         os.system('sudo poweroff')
 
 
