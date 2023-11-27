@@ -66,7 +66,7 @@ class PracticeDisplay:
         # Create blank image for drawing.
         # Make sure to create image with mode 'RGB' for full color.
         height = disp.width  # we swap height/width to rotate it to landscape (huh?)
-        width = disp.height
+        width  = disp.height
         image = Image.new("RGB", (width, height))
         rotation = 0
 
@@ -102,6 +102,37 @@ class PracticeDisplay:
         self.set_backlight_on(True)
 
         # end __init__
+
+
+    def show_image(self, image_path):
+
+        # Draw a black-filled box to clear the image.
+
+
+        self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
+        self.disp_.image(self.image_)
+
+        new_image = Image.open(image_path)
+
+        # Scale the image to the smaller screen dimension
+        image_ratio = new_image.width / new_image.height
+        screen_ratio = self.width_ / self.height_
+        if screen_ratio < image_ratio:
+            scaled_width = new_image.width * self.height_ // new_image.height
+            scaled_height = self.height_
+        else:
+            scaled_width = self.width_
+            scaled_height = new_image.height * self.width_ // new_image.width
+        new_image = new_image.resize((scaled_width, scaled_height), Image.BICUBIC)
+
+        # Crop and center the image
+        x = scaled_width // 2 - self.width_ // 2
+        y = scaled_height // 2 - self.height_ // 2
+        new_image = new_image.crop((x, y, x + self.width_, y + self.height_))
+
+        # Display image.
+        self.disp_.image(new_image)
+
 
 
     def set_backlight_on(self, on_state):

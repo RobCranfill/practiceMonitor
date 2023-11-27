@@ -1,6 +1,8 @@
 # PracticeMonitor for RPi Zero
 # robcranfill@gmail.com
 
+# /mnt/pizero2w/proj/practiceMonitor/pmZero.py
+
 # standard libs
 import json
 import os
@@ -64,9 +66,21 @@ def set_up_shutdown_button():
     button_23.switch_to_input()
     return button_23
 
+def set_up_other_button():
+    button_24 = digitalio.DigitalInOut(board.D24)
+    button_24.switch_to_input()
+    return button_24
+
+def check_other_button(b, d):
+    pushed = not b.value
+    if pushed:
+        print("Button 24 pressed")
+        d.show_image("simple1a.png")
+        time.sleep(1) # debounce
+
+
 def check_shutdown_button(b, d):
     pushed = not b.value
-    # print(f"Button? {pushed}")
     if pushed:
         # If running from console, gives time to hit <ctrl>C 
         print("Shutting down in 10! ^C to abort!")
@@ -84,11 +98,13 @@ def check_shutdown_button(b, d):
                 d.update_display()
 
                 time.sleep(1) # debounce
-                
+
                 d.draw_text_in_color(4, "", "#000000")
                 d.update_display()
 
                 return
+        d.clear_display()
+        d.set_backlight_on(False)
         os.system('sudo poweroff')
 
 
@@ -96,6 +112,7 @@ def main_loop(disp, midi_port):
     global g_run
 
     shutdown_button = set_up_shutdown_button()
+    other_button = set_up_other_button()
 
     # for current session
     session_start_time = None
@@ -195,6 +212,7 @@ def main_loop(disp, midi_port):
             display.update_display()
 
         check_shutdown_button(shutdown_button, disp)
+        check_other_button(other_button, disp)
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
