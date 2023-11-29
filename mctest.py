@@ -1,5 +1,9 @@
 # test midi connect/re-connect
 
+# send sig with 
+#     kill -USR1 `pidof python`
+# or something
+
 import mido
 import signal
 import sys
@@ -13,7 +17,7 @@ def handle_SIGUSR(sig, frame):
     print('setting restart_flag!')
     restart_flag = True
 
-def get_midi_port(): # returns tuple of port and nice name
+def get_midi_port(): # returns tuple of (port, nice name)
 
     # Get the proper MIDI input port.
     # Use the first one other than the system "Through" port.
