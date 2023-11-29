@@ -43,6 +43,7 @@ Except it's *slow*! Either find a workaround or find a replacement display.
 
 
 ## To Do
+ * Create stand-alone command to turn off backlight; use it.
  * Handle no MIDI device attached
  * Done:<strike>
    * Handle SIGTERM/INT &c (blank screen, etc)
