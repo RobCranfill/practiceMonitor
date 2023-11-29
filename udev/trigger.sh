@@ -10,7 +10,7 @@ logfile="/home/rob/proj/practiceMonitor/udev/udev.log"
 
 if [ "$ACTION" = "change" ]; then
   systemd-cat echo "cran: Sending USR1 signal to $python_file"
-  systemd-cat echo "cran: PIDs: `pgrep $python_file`"
+  systemd-cat echo "cran: PIDs: `pgrep --full $python_file`"
   pkill --signal USR1 --full $python_file
   exit 0
 fi

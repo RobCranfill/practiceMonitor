@@ -34,14 +34,16 @@ SESSION_TIMEOUT_SEC =  10
 # global flag to keep running or die; for SIGTERM
 g_run = True
 
-def interrupt_handler(signum, frame):
+def handle_signal(signum, frame):
     global g_run
-    print(f"Caught signal {signum}. Stopping.")
-    g_run = False
 
-# only need SIGTERM for service?
-# signal.signal(signal.SIGINT,  interrupt_handler)
-signal.signal(signal.SIGTERM, interrupt_handler)
+    if signum == signal.SIGINT:
+        print(f"Caught SIGINT. Stopping.")
+        g_run = False
+    elif signum == signal.SIGUSR1:
+        print(f"Caught SIGUSR1. handle it!")
+    else:
+        print(f"Caught ANOTHER SIGNAL??? {signum}")
 
 
 def output_record(total_sessions, session_start_sec, session_end_sec, session_notes):
@@ -109,6 +111,8 @@ def check_shutdown_button(b, d):
 
 
 def main_loop(disp, midi_port):
+
+    # when this goes False, we stop procesing events
     global g_run
 
     shutdown_button = set_up_shutdown_button()
@@ -222,14 +226,17 @@ def main_loop(disp, midi_port):
 
 if __name__ == "__main__":
 
-    display = PracticeDisplay.PracticeDisplay()
+    # set up signal handlers; kill and usr1 (for reloading MIDI list)
+    signal.signal(signal.SIGINT,  handle_signal)
+    signal.signal(signal.SIGUSR1, handle_signal)
 
+
+    display = PracticeDisplay.PracticeDisplay()
     display.show_elapsed_time(0)
     display.show_session_time(0)
     display.set_session_label("Session: 0")
     display.set_notes_label("Notes: 0")
     # display.set_time_session_fg("black")
-
 
     try:
         
@@ -257,9 +264,10 @@ if __name__ == "__main__":
         print(e)
         sys.exit(1)
 
-    # Mainly for keyboard interrupt
+    # Mainly for keyboard interrupt, while running from console (in dev)
     try:
         main_loop(display, midi_port)
     except KeyboardInterrupt:
+        print("Got KeyboardInterrupt !")
         display.set_backlight_on(False)
         print("\nDone!")
