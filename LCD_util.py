@@ -5,10 +5,11 @@ import board
 import digitalio
 import sys
 
-def set_backlight_state(toOn):
+def set_backlight_state(backlight_on: bool) -> None:
     backlight_ = digitalio.DigitalInOut(board.D22)
     backlight_.switch_to_output()
-    backlight_.value = toOn
+    backlight_.value = backlight_on
+
 
 if __name__ == "__main__":
 
