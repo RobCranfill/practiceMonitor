@@ -42,6 +42,7 @@ def handle_signal(signum, frame):
         g_run = False
     elif signum == signal.SIGUSR1:
         print(f"Caught SIGUSR1. handle it!")
+        get_midi_port_and_name()
     else:
         print(f"Caught ANOTHER SIGNAL??? {signum}")
 
@@ -224,6 +225,28 @@ def main_loop(disp, midi_port):
     # end main_loop
 
 
+# return (port, name)
+def get_midi_port_and_name():
+
+    # Get the proper MIDI input port.
+    # Use the first one other than the system "Through" port.
+    #
+    inputs = mido.get_input_names()
+    # print(f" ports: {inputs}")
+
+    port_name = None
+    for pName in inputs:
+        if pName.find("Through") == -1:
+            port_name = pName
+            break
+    if port_name is None:
+        print("Can't find non-Through port!")
+        sys.exit(1)
+    print(f"Using MIDI port {port_name}")
+    midi_port = mido.open_input(port_name)
+    return midi_port, port_name
+
+
 if __name__ == "__main__":
 
     # set up signal handlers; kill and usr1 (for reloading MIDI list)
@@ -240,22 +263,7 @@ if __name__ == "__main__":
 
     try:
         
-        # Get the proper MIDI input port.
-        # Use the first one other than the system "Through" port.
-        #
-        inputs = mido.get_input_names()
-        # print(f" ports: {inputs}")
 
-        portName = None
-        for pName in inputs:
-            if pName.find("Through") == -1:
-                portName = pName
-                break
-        if portName is None:
-            print("Can't find non-Through port!")
-            sys.exit(1)
-        print(f"Using MIDI port {portName}")
-        midi_port = mido.open_input(portName)
 
         # show the device connected to
         display.set_device_name(portName.split(":")[0])

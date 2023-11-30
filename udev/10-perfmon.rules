@@ -1,4 +1,4 @@
 # rules for performance monitor
 # robcranfill
 
-SUBSYSTEMS=="usb" RUN+="/home/rob/proj/practiceMonitor/udev/trigger.sh"
+SUBSYSTEMS=="usb" ACTION=="change" RUN+="/home/rob/proj/practiceMonitor/udev/trigger.sh"
