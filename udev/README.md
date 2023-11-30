@@ -1,101 +1,87 @@
-# Notes for practive monitor udev rules
+# Notes for Practice Monitor udev rules
 
-## Notes
-Goal: write a udev rule &c that notices a MIDI keyboard being plugged in,
-and notify the PerfMon app to re-scan the MIDI devices.
+## Purpose
+The Python code that uses the <b>mido</b> library doesn't seem to be able
+to tell that a keyboard has been disconnected (usually by being turned off).
+We need a way to notify the app that things have changed.
 
 ## Implementation
+Via the <tt>udev</tt> facility, watch for an appropriate device (what?) being added (removed? changed?)
+and run a script that sends a signal to the Python code to re-scan the MIDI devices.
+
+Currently we catch any USB "change" action. This probably fires more often than needed, but works.
+It would be better to only do so with appropriate devices ("sound"? "alsa"?)
+
+
+# Installation
+* Copy udev file <tt>10-pracmon.rules</tt> to <tt>/etc/udev/rules.d/</tt>
 
 ### Issues
-* How to install this?
-* How to install with correct paths?
-  * udev rule path to scripts
-* Process control:
-  * <code>pkill --signal USR1 --full pmZero.py</code>
+* There's a full path to the shell script in my <tt>home</tt> dir in the udev rule. Ugly but OK.
+
 
 ## What's where
-
-working in <tt>/home/rob/proj/practiceMonitor/udev</tt>
-  - <tt>monitor.sh</tt> - test code to watch log file
+Working dir <tt>/home/rob/proj/practiceMonitor/udev</tt>
   - <tt>trigger.sh</tt> - script udev rule will run
-  - <tt>/etc/udev/rules.d/88-perfmon.rules</tt> - our udev rule(s)
 
-## testing
 
-Results from test:
+## Notes
+* https://www.reactivated.net/writing_udev_rules.html#external-run was very helpful writing udev rules, if a little out of date.
+* To see messages from shell script, <code>journalctl -f -n 0</code>
+  * Or <code>journalctl -f -n 0 | grep pracmon</code> to see just our messages.
 
-### remove
+  
+## Notes from testing
+
+### udevadm messages whilst un/plugging keyboard
+
+
+Note that the following was performed on my laptop, not the PiZero, and does
+not show a "change" event! Possible issue for a desktop version.
+
+<code>udevadm monitor --subsystem-match=usb</code>
 <pre>
-Wed Nov 29 09:39:56 PST 2023; usbmisc; remove
-Wed Nov 29 09:39:56 PST 2023; snd_seq; remove
-Wed Nov 29 09:39:56 PST 2023; usb; unbind
-Wed Nov 29 09:39:56 PST 2023; hidraw; remove
-Wed Nov 29 09:39:56 PST 2023; sound; remove
-Wed Nov 29 09:39:56 PST 2023; sound; remove
-Wed Nov 29 09:39:56 PST 2023; sound; remove
-Wed Nov 29 09:39:56 PST 2023; sound; remove
-Wed Nov 29 09:39:56 PST 2023; usb; remove
-Wed Nov 29 09:39:56 PST 2023; hid; unbind
-Wed Nov 29 09:39:56 PST 2023; sound; remove
-Wed Nov 29 09:39:56 PST 2023; hid; remove
-Wed Nov 29 09:39:56 PST 2023; usb; unbind
-Wed Nov 29 09:39:56 PST 2023; usb; unbind
-Wed Nov 29 09:39:56 PST 2023; usb; remove
-Wed Nov 29 09:39:57 PST 2023; usb; remove
-Wed Nov 29 09:39:57 PST 2023; usb; unbind
-Wed Nov 29 09:39:57 PST 2023; usb; remove
+rob@robuntuflex:~/proj/practiceMonitor/udev$ udevadm monitor --subsystem-match=usb
+monitor will print the received events for:
+UDEV - the event which udev sends out after rule processing
+KERNEL - the kernel uevent
+
+KERNEL[2320.869236] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+KERNEL[2320.869390] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+KERNEL[2320.870279] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+KERNEL[2320.870421] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+KERNEL[2320.870556] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+KERNEL[2320.870714] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+KERNEL[2320.871437] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+KERNEL[2320.871611] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+UDEV  [2320.900256] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+UDEV  [2320.903328] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+UDEV  [2320.904157] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+UDEV  [2320.905639] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+UDEV  [2320.905989] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+UDEV  [2320.907385] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+UDEV  [2320.909369] unbind   /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+UDEV  [2320.910771] remove   /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+KERNEL[2324.093851] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+KERNEL[2324.095439] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+KERNEL[2324.096619] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+KERNEL[2324.096829] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+KERNEL[2324.097630] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+KERNEL[2324.097843] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+KERNEL[2324.097925] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+KERNEL[2324.098018] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+UDEV  [2324.111345] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
+UDEV  [2324.116155] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+UDEV  [2324.116526] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+UDEV  [2324.119275] add      /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+UDEV  [2324.127865] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.2 (usb)
+UDEV  [2324.138537] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0 (usb)
+UDEV  [2324.145872] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.1 (usb)
+UDEV  [2324.153251] bind     /devices/pci0000:00/0000:00:14.0/usb1/1-3 (usb)
 </pre>
 
-### add
-More than one call interleaved??? happens on 'remove', too!
-<pre>
-Wed Nov 29 09:40:21 PST 2023; usb; add
-Wed Nov 29 09:40:21 PST 2023Wed Nov 29 09:40:21 PST 2023; usb; add
-; usb; add
-Wed Nov 29 09:40:21 PST 2023; usb; add
-Wed Nov 29 09:40:21 PST 2023; hid; add
-Wed Nov 29 09:40:21 PST 2023Wed Nov 29 09:40:21 PST 2023; usbmisc; add
-; sound; add
-Wed Nov 29 09:40:21 PST 2023; usb; bind
-Wed Nov 29 09:40:21 PST 2023; sound; add
-Wed Nov 29 09:40:21 PST 2023; sound; add
-Wed Nov 29 09:40:21 PST 2023Wed Nov 29 09:40:21 PST 2023; sound; add
-; snd_seq; add
-Wed Nov 29 09:40:21 PST 2023; hidraw; add
-Wed Nov 29 09:40:21 PST 2023; sound; add
-Wed Nov 29 09:40:21 PST 2023; hid; bind
-Wed Nov 29 09:40:21 PST 2023; usb; bind
-Wed Nov 29 09:40:21 PST 2023; usb; bind
-Wed Nov 29 09:40:21 PST 2023; usb; bind
-Wed Nov 29 09:40:21 PST 2023; sound; change
-</pre>
-
-
-## udevadm
-not really that necessary!
-<pre>
-(zenv) rob@pizero2w:~/proj/practiceMonitor/udev $ udevadm --help
-
-udevadm [--help] [--version] [--debug] COMMAND [COMMAND OPTIONS]
-
-Send control commands or test the device manager.
-
-Commands:
-  info          Query sysfs or the udev database
-  trigger       Request events from the kernel
-  settle        Wait for pending udev events
-  control       Control the udev daemon
-  monitor       Listen to kernel and udev events
-  test          Test an event run
-  test-builtin  Test a built-in command
-  wait          Wait for device or device symlink
-  lock          Lock a block device
-
-See the udevadm(8) man page for details.
-</pre>
-
-from <code>journalctl -f -n 0</code>
-
+### Journal messages whilst un/plugging keyboard
+<code>journalctl -f -n 0</code>
 <pre>
 Nov 29 10:45:16 pizero2w kernel: usb 1-1: USB disconnect, device number 24
 Nov 29 10:45:18 pizero2w kernel: usb 1-1: new full-speed USB device number 25 using dwc2
@@ -109,6 +95,6 @@ Nov 29 10:45:18 pizero2w mtp-probe[3480]: checking bus 1, device 25: "/sys/devic
 Nov 29 10:45:18 pizero2w mtp-probe[3480]: bus: 1, device: 25 was not an MTP device
 Nov 29 10:45:18 pizero2w mtp-probe[3502]: checking bus 1, device 25: "/sys/devices/platform/soc/3f980000.usb/usb1/1-1"
 Nov 29 10:45:18 pizero2w mtp-probe[3502]: bus: 1, device: 25 was not an MTP device
-Nov 29 10:45:18 pizero2w echo[3505]: cran: Sending USR1 signal to pmZero.py
+Nov 29 10:45:18 pizero2w echo[3505]: pracmon: Sending USR1 signal to pmZero.py
 Nov 29 10:45:18 pizero2w (udev-worker)[3455]: card0: Process '/home/rob/proj/practiceMonitor/udev/trigger.sh' failed with exit code 1.
 </pre>
