@@ -33,18 +33,24 @@ SESSION_TIMEOUT_SEC =  10
 
 # global flag to keep running or die; for SIGTERM
 g_run = True
+g_rescan_midi = False
 
+
+# Handle either keyboard interrupt (ctrl-C), in which case we die gracefully;
+# or SIGUSR1, which causes us to re-scan the MIDI bus
+#
 def handle_signal(signum, frame):
     global g_run
+    global g_rescan_midi
 
     if signum == signal.SIGINT:
-        print(f"Caught SIGINT. Stopping.")
+        print("Caught SIGINT. Stopping.")
         g_run = False
     elif signum == signal.SIGUSR1:
-        print(f"Caught SIGUSR1. handle it!")
-        get_midi_port_and_name()
+        print("Caught SIGUSR1. Rescanning...")
+        g_rescan_midi = True
     else:
-        print(f"Caught ANOTHER SIGNAL??? {signum}")
+        print(f"Caught some other signal: {signum}")
 
 
 def output_record(total_sessions, session_start_sec, session_end_sec, session_notes):
@@ -64,15 +70,11 @@ def output_record(total_sessions, session_start_sec, session_end_sec, session_no
             )
 
 
-def set_up_shutdown_button():
-    button_23 = digitalio.DigitalInOut(board.D23)
-    button_23.switch_to_input()
-    return button_23
+def set_up_button(board_pin):
+    button = digitalio.DigitalInOut(board_pin)
+    button.switch_to_input()
+    return button
 
-def set_up_other_button():
-    button_24 = digitalio.DigitalInOut(board.D24)
-    button_24.switch_to_input()
-    return button_24
 
 def check_other_button(b, d):
     pushed = not b.value
@@ -116,8 +118,12 @@ def main_loop(disp, midi_port):
     # when this goes False, we stop procesing events
     global g_run
 
-    shutdown_button = set_up_shutdown_button()
-    other_button = set_up_other_button()
+    # if MIDI changes, we will find out this way
+    global g_rescan_midi
+
+
+    shutdown_button = set_up_button(board.D23)
+    other_button = set_up_button(board.D24)
 
     # for current session
     session_start_time = None
@@ -134,6 +140,11 @@ def main_loop(disp, midi_port):
     display.update_display()
 
     while g_run and True:
+
+        if g_rescan_midi:
+            midi_port, port_name = get_midi_port_and_name()
+            disp.set_device_name(port_name)
+            g_rescan_midi = False
 
         display_changed = False
 
@@ -177,9 +188,7 @@ def main_loop(disp, midi_port):
             last_event_time = event_time
         
         # if notes_in_queue > 0:
-        #     print(f"done processing MIDI queue of {notes_in_queue}")
-        if notes_in_queue > 0:
-            print(f"Processed {notes_in_queue} MIDI notes in {(time.time()-queue_start):0.2f}")
+        #     print(f"Processed {notes_in_queue} MIDI notes in {(time.time()-queue_start):0.2f}")
 
 
         if in_session:
@@ -228,6 +237,8 @@ def main_loop(disp, midi_port):
 # return (port, name)
 def get_midi_port_and_name():
 
+    print("Rescanning MIDI....")
+
     # Get the proper MIDI input port.
     # Use the first one other than the system "Through" port.
     #
@@ -242,9 +253,11 @@ def get_midi_port_and_name():
     if port_name is None:
         print("Can't find non-Through port!")
         sys.exit(1)
+
     print(f"Using MIDI port {port_name}")
     midi_port = mido.open_input(port_name)
-    return midi_port, port_name
+    short_name = port_name.split(":")[0]
+    return midi_port, short_name
 
 
 if __name__ == "__main__":
@@ -262,11 +275,10 @@ if __name__ == "__main__":
     # display.set_time_session_fg("black")
 
     try:
-        
 
-
+        midi_port, port_name = get_midi_port_and_name()
         # show the device connected to
-        display.set_device_name(portName.split(":")[0])
+        display.set_device_name(port_name)
 
     except Exception as e:
         print(e)
