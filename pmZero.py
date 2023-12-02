@@ -233,6 +233,16 @@ def main_loop(disp, midi_port):
 
     # end main_loop
 
+def set_up_iot(key):
+
+    # show first 4 and last 4?
+
+    kl = len(key)
+    key_masked = key[:4] + "*"*(kl-8) + key[kl-4:]
+
+    print(f"AIO key: {key_masked}")    
+
+
 
 # return (port, name)
 def get_midi_port_and_name():
@@ -261,6 +271,11 @@ def get_midi_port_and_name():
 
 
 if __name__ == "__main__":
+
+    aio_key = ""
+    if len(sys.argv) > 1:
+        aio_key = sys.argv[1]
+        set_up_iot(aio_key)
 
     # set up signal handlers; kill and usr1 (for reloading MIDI list)
     signal.signal(signal.SIGINT,  handle_signal)

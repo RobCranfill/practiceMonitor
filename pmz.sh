@@ -3,11 +3,13 @@
 
 echo "Checking service..."
 systemctl is-active pmz.service
-if [ $? -eq 0 ] 
-then 
+if [ $? -eq 0 ]
+then
   echo "The service is running?"
-  echo "stop it, then try again"
-  exit 1 
+  echo "Stop it, then try again!"
+  exit 1
 fi
+echo "Service NOT running - OK!"
 
-python pmZero.py
+python pmZero.py `cat aio_secret.text`
+

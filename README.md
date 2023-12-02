@@ -43,14 +43,14 @@ Except it's *slow*! Either find a workaround or find a replacement display.
 
 
 ## To Do
- * Create stand-alone command to turn off backlight; use it.
- * Handle no MIDI device attached
- * Done:<strike>
+ * Handle no MIDI device attached - including displaying msg on screen?
+ * Done did:<strike>
    * Handle SIGTERM/INT &c (blank screen, etc)
    * Show MIDI device name on LCD
    * LCD display - backlight off doesn't work
-   * Clear display when done
-   * Auto-select appropriate MIDI device (HOW?)
+   * Clear/poweroff display when done
+   * Auto-select appropriate MIDI device
+   * Create stand-alone command to turn off backlight; use it.
    </strike>
  
 
@@ -78,7 +78,10 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
 
 ## Linux service
 * TODO:
-  * How to check if service already running? (For running from command line)
+  * Use syslog (or whatever)
+  * Done:
+  * <strike>How to check if service already running? (For running from command line)
+    </strike>
 
 * Notes:
   * script at /lib/systemd/system/pmz.service

@@ -1,14 +1,8 @@
 #!/bin/bash
-# Run the Performance Monitor as a service ?
-
-echo "PerfMon started" >>perfmon.log
+# Run the Performance Monitor as a service.
 
 cd /home/rob/proj/practiceMonitor
-
+echo "PerfMon started" >>./perfmon.log
 source ./zenv/bin/activate
-
-python ./pmZero.py
-
-echo done!
-echo "PerfMon ended" `date` >>perfmon.log
-
+python ./pmZero.py `cat aio_secret.text`
+echo "PerfMon ended" `date` >>./perfmon.log
