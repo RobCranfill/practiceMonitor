@@ -7,7 +7,8 @@ import digitalio
 import board
 from PIL import Image, ImageDraw, ImageFont
 from adafruit_rgb_display import st7789
-# import displayio
+import RPi.GPIO as GPIO
+
 
 
 # Display:
@@ -26,6 +27,17 @@ FONT_SIZE_SMALL = 24
 
 ELAPSED_TIME_Y = 50
 SESSION_TIME_Y = 00
+
+
+REGULAR_COLOR   = "#FFFFFF"
+HIGHLIGHT_COLOR = "#FF0000"
+
+WIDGET_AREA_WIDTH  =  30
+WIDGET_EXECUTE_Y   =  50
+WIDGET_MOVE_Y      = 150
+HEADER_AREA_HEIGHT =  24
+
+MAX_MENU_ITEMS = 9
 
 
 def format_seconds(n_seconds):
@@ -106,9 +118,6 @@ class PracticeDisplay:
 
     def show_image(self, image_path):
 
-        # Draw a black-filled box to clear the image.
-
-
         self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
         self.disp_.image(self.image_)
 
@@ -134,7 +143,6 @@ class PracticeDisplay:
         self.disp_.image(new_image)
 
 
-
     def set_backlight_on(self, on_state):
         print(f"* Setting backlight {'on' if on_state else 'off'}")
         self.backlight_.value = on_state
@@ -156,9 +164,6 @@ class PracticeDisplay:
         self.backlight_.deinit()
         self.backlight_ = None
         
-        # No equivalent in PIL?
-        # displayio.release_displays()
-
 
     def clear_display(self):
         self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
@@ -248,6 +253,30 @@ class PracticeDisplay:
 
     def set_device_name(self, device_str):
         self.draw_text_in_color(9, device_str, "#00FF00")
+
+
+
+# ************************************************** NEW MENU STUFF
+    def start_menu_mode(self, menu_data):
+        self.menu_data = menu_data
+        self.menu_item_selected = 0
+        self.clear_display()
+        self.update_menu_display()
+
+    def select_next_item(self):
+        self.menu_item_selected = (self.menu_item_selected + 1) % len(self.menu_data)
+        self.update_menu_display()
+
+    def select_prev_item(self):
+        self.menu_item_selected = (self.menu_item_selected -1) % len(self.menu_data)
+        self.update_menu_display()
+
+    def update_menu_display(self):
+        i = 0
+        for m in self.menu_data:
+            c = "#00FF00" if i == self.menu_item_selected else "#FFFFFF"
+            self.draw_text_in_color(i, m["text"], c)
+            i += 1
 
 
 def test():

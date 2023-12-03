@@ -17,6 +17,7 @@ import mido
 
 # our code
 import PracticeDisplayLCD as PracticeDisplay
+import RPi.GPIO as GPIO
 
 
 # pseudo-constants
@@ -30,10 +31,21 @@ BG_COLOR = "blue"
 MIDI_EVENT_DELAY_S = 0.01
 SESSION_TIMEOUT_SEC =  10
 
+BUTTON_A_pin = 24
+BUTTON_B_pin = 23
+
 
 # global flag to keep running or die; for SIGTERM
 g_run = True
+
+# set in response to SIGUSR1
 g_rescan_midi = False
+
+# global display/function mode
+# g_run_mode_menu = False
+
+# button handler needs to use globals :-/
+g_display = None 
 
 
 # Handle either keyboard interrupt (ctrl-C), in which case we die gracefully;
@@ -70,50 +82,76 @@ def output_record(total_sessions, session_start_sec, session_end_sec, session_no
             )
 
 
-def set_up_button(board_pin):
-    button = digitalio.DigitalInOut(board_pin)
-    button.switch_to_input()
-    return button
+# def button_handler_upper(channelIsIgnored):
+#     global g_display
+#     if g_display is None:
+#         print("NO DISPLAY YET???")
+#         return
+#     # TODO: remove old eveny handler?
+#     print("Handling menu....")
+#     GPIO.remove_event_detect(BUTTON_A_pin)
+#     GPIO.remove_event_detect(BUTTON_B_pin)
+#     print("Event handlers removed?")
+#     g_display.handle_menu_mode(
+#             (
+#             {"text": "One",     "action": do_action_one}, 
+#             {"text": "Two",     "action": do_action_two}, 
+#             {"text": "Three",   "action": do_action_three}
+#             ),
+#             BUTTON_A_pin, BUTTON_B_pin
+#         )
+# def button_handler_lower(channelIsIgnored):
+#     # 
+#     print(f"Lower button! ({channelIsIgnored})")
 
 
-def check_other_button(b, d):
-    pushed = not b.value
-    if pushed:
-        print("Button 24 pressed")
-        d.show_image("simple1a.png")
-        time.sleep(1) # debounce
+def set_up_buttons():
+
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUTTON_A_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.setup(BUTTON_B_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+    GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=handle_menu_mode, bouncetime=300)
+    GPIO.remove_event_detect(BUTTON_B_pin)
+    # GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=button_handler_lower, bouncetime=300)
 
 
-def check_shutdown_button(b, d):
-    pushed = not b.value
-    if pushed:
-        # If running from console, gives time to hit <ctrl>C 
-        print("Shutting down in 10! ^C to abort!")
-
-        d.draw_text_in_color(4, "shutting down!", "#FF0000")
-        d.update_display()
-
-        for i in range(10, 0, -1):
-            print(f"  {i}...")
-            time.sleep(1)
-            pushed = not b.value
-            if pushed:
-                print("\nAborting shutdown!")
-                d.draw_text_in_color(4, "aborting shutdown!", "#00FF00")
-                d.update_display()
-
-                time.sleep(1) # debounce
-
-                d.draw_text_in_color(4, "", "#000000")
-                d.update_display()
-
-                return
-        d.clear_display()
-        d.set_backlight_on(False)
-        os.system('sudo poweroff')
+def dummy_handler(channel):
+    print(f"dummy_handler({channel})")
 
 
-def main_loop(disp, midi_port):
+def handle_menu_mode(event_channel):
+
+    print("BEGIN handle_menu_mode!")
+    GPIO.remove_event_detect(event_channel)
+    GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=handle_button_upper, bouncetime=300)
+    GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=handle_button_lower, bouncetime=300)
+
+    global g_display
+    g_display.start_menu_mode((
+            {"text": "One",     "action": dummy_handler}, 
+            {"text": "Two",     "action": dummy_handler}, 
+            {"text": "Three",   "action": dummy_handler}
+            ))
+
+    # # need a global to exit menu mode
+    # while True:
+    #     pass
+
+
+def handle_button_upper(unused_channel):
+    global g_display
+    print("handle_button_upper!")
+    g_display.select_prev_item()
+
+def handle_button_lower(unused_channel):
+    global g_display
+    print("handle_button_lower!")
+    g_display.select_next_item()
+
+
+
+def main_loop(display, midi_port):
 
     # when this goes False, we stop procesing events
     global g_run
@@ -122,8 +160,8 @@ def main_loop(disp, midi_port):
     global g_rescan_midi
 
 
-    shutdown_button = set_up_button(board.D23)
-    other_button = set_up_button(board.D24)
+    set_up_buttons()
+
 
     # for current session
     session_start_time = None
@@ -137,14 +175,25 @@ def main_loop(disp, midi_port):
     last_event_time = 0
     in_session = False
 
-    display.update_display()
+    # old_run_mode_menu = g_run_mode_menu
 
-    while g_run and True:
+    while g_run:
 
         if g_rescan_midi:
             midi_port, port_name = get_midi_port_and_name()
-            disp.set_device_name(port_name)
+            display.set_device_name(port_name)
             g_rescan_midi = False
+
+        # if old_run_mode_menu != g_run_mode_menu:
+        #     print(f"Changing g_run_mode_menu: {g_run_mode_menu}")
+        #     display.set_menu_mode(g_run_mode_menu)
+        #     old_run_mode_menu = g_run_mode_menu
+
+        #     # TODO: DO WE IGNORE ALL MIDI MESSAGES WHEN IN MENU MODE? FOR NOW, YES
+
+        #     continue
+
+        display.update_display()
 
         display_changed = False
 
@@ -166,7 +215,7 @@ def main_loop(disp, midi_port):
                 continue
 
             session_note_count += 1
-            disp.set_notes_label(f"Notes: {session_note_count}")
+            display.set_notes_label(f"Notes: {session_note_count}")
             display_changed = True
 
             event_time = int(time.time())
@@ -178,7 +227,7 @@ def main_loop(disp, midi_port):
                 total_session_count += 1
                 print(f"Starting session #{total_session_count}")
 
-                disp.set_session_label(f"Session {total_session_count}")
+                display.set_session_label(f"Session {total_session_count}")
                 # disp.set_time_session_fg("white")
                 display_changed = True
 
@@ -201,7 +250,7 @@ def main_loop(disp, midi_port):
                 # FIXME: this is wrong. so wrong.
                 # disp.show_elapsed_time(int(total_practice_time + current_session_time))
 
-                disp.show_session_time(int(current_session_time))
+                display.show_session_time(int(current_session_time))
                 display_changed = True
 
                 # end session?
@@ -210,8 +259,8 @@ def main_loop(disp, midi_port):
 
                     # update total_practice_time; TODO: persist this
                     total_practice_time += current_session_time
-                    disp.show_elapsed_time(total_practice_time)
-                    disp.set_notes_label(f"Notes: {session_note_count}")
+                    display.show_elapsed_time(total_practice_time)
+                    display.set_notes_label(f"Notes: {session_note_count}")
 
                     print(f"Ending session #{total_session_count}")
 
@@ -220,26 +269,22 @@ def main_loop(disp, midi_port):
                     last_event_time = now_time
 
                     # WTF was this?
-                    # disp.set_time_session_fg("black")
+                    # display.set_time_session_fg("black")
 
         if display_changed:
             display.update_display()
-
-        check_shutdown_button(shutdown_button, disp)
-        check_other_button(other_button, disp)
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
 
     # end main_loop
 
+
 def set_up_iot(key):
 
-    # show first 4 and last 4?
-
+    # show first and last 4 chars
     kl = len(key)
     key_masked = key[:4] + "*"*(kl-8) + key[kl-4:]
-
     print(f"AIO key: {key_masked}")    
 
 
@@ -262,7 +307,9 @@ def get_midi_port_and_name():
             break
     if port_name is None:
         print("Can't find non-Through port!")
-        sys.exit(1)
+        # TODO: er, return something so we can exit nice up top
+        # throw an expception?
+        sys.exit(1) 
 
     print(f"Using MIDI port {port_name}")
     midi_port = mido.open_input(port_name)
@@ -270,12 +317,13 @@ def get_midi_port_and_name():
     return midi_port, short_name
 
 
-if __name__ == "__main__":
+def main(args):
+    global g_display
 
-    aio_key = ""
-    if len(sys.argv) > 1:
-        aio_key = sys.argv[1]
-        set_up_iot(aio_key)
+    print(f" GPIO.VERSION {GPIO.VERSION}")
+
+    if len(args) > 1:
+        set_up_iot(args[1])
 
     # set up signal handlers; kill and usr1 (for reloading MIDI list)
     signal.signal(signal.SIGINT,  handle_signal)
@@ -288,21 +336,24 @@ if __name__ == "__main__":
     display.set_session_label("Session: 0")
     display.set_notes_label("Notes: 0")
     # display.set_time_session_fg("black")
+    g_display = display
+
 
     try:
-
         midi_port, port_name = get_midi_port_and_name()
-        # show the device connected to
         display.set_device_name(port_name)
 
-    except Exception as e:
-        print(e)
-        sys.exit(1)
-
-    # Mainly for keyboard interrupt, while running from console (in dev)
-    try:
         main_loop(display, midi_port)
-    except KeyboardInterrupt:
-        print("Got KeyboardInterrupt !")
+
+    # except Exception as e:
+    #     print(f"Got exception {e}")
+
+    finally:
         display.set_backlight_on(False)
-        print("\nDone!")
+
+        GPIO.cleanup()
+
+        print("Done!")
+
+if __name__ == "__main__":
+    main(sys.argv)
