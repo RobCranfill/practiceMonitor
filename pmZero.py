@@ -27,9 +27,10 @@ JSON_KEY_START  = "SeshStart"
 JSON_KEY_END    = "SeshEnd"
 JSON_KEY_NOTES  = "SeshNotes"
 
-BG_COLOR = "blue"
-MIDI_EVENT_DELAY_S = 0.01
 SESSION_TIMEOUT_SEC =  10
+
+MIDI_EVENT_DELAY_S = 0.01
+MENU_EVENT_DELAY_S = 1
 
 BUTTON_A_pin = 24
 BUTTON_B_pin = 23
@@ -88,13 +89,47 @@ def set_up_buttons():
     GPIO.setup(BUTTON_A_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.setup(BUTTON_B_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
-    GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=handle_menu_mode, bouncetime=300)
+    normal_mode_buttons()
+
+
+# top button = enter menu mode; bottom button = nothing (for now)
+def normal_mode_buttons():
+
+    GPIO.remove_event_detect(BUTTON_A_pin)
     GPIO.remove_event_detect(BUTTON_B_pin)
+
+    GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=begin_menu_mode, bouncetime=300)
     # GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=button_handler_lower, bouncetime=300)
 
 
-def handle_action_1(channel):
-    print(f"handle_action_1({channel})")
+# top button = "do it", bottom button = move cursor down
+def begin_menu_mode(event_channel):
+    global g_display
+    global g_menu_mode
+    global g_menu_data
+
+    print("begin_menu_mode!")
+
+    GPIO.remove_event_detect(event_channel)
+    GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=menu_mode_button_upper, bouncetime=300)
+    GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=menu_mode_button_lower, bouncetime=300)
+
+    g_menu_data = (
+            {"text": "Resume",  "action": exit_menu_mode}, 
+            {"text": "Two",     "action": handle_action_2}, 
+            {"text": "Three",   "action": handle_action_3}
+            )
+    g_display.start_menu_mode(g_menu_data)
+
+    print("Exiting begin_menu_mode")
+    g_menu_mode = True
+
+
+def exit_menu_mode(channel):
+    global g_menu_mode
+    print(f"exit_menu_mode({channel})")
+    normal_mode_buttons()
+    g_menu_mode = False
 
 def handle_action_2(channel):
     print(f"handle_action_2({channel})")
@@ -103,41 +138,19 @@ def handle_action_3(channel):
     print(f"handle_action_3({channel})")
 
 
-def handle_menu_mode(event_channel):
-    global g_display
-    global g_menu_mode
-    global g_menu_data
-
-
-    print("BEGIN handle_menu_mode!")
-
-    GPIO.remove_event_detect(event_channel)
-    GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=handle_button_upper, bouncetime=300)
-    GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=handle_button_lower, bouncetime=300)
-
-    g_menu_data = (
-            {"text": "One",     "action": handle_action_1}, 
-            {"text": "Two",     "action": handle_action_2}, 
-            {"text": "Three",   "action": handle_action_3}
-            )
-    g_display.start_menu_mode(g_menu_data)
-
-    print("Exiting handle_menu_mode")
-    g_menu_mode = True
-
-
 # Execute selected action
-def handle_button_upper(channel):
+def menu_mode_button_upper(channel):
     global g_display
     global g_menu_data
 
+    # TODO: make this a method?
     selected_item = g_menu_data[g_display.menu_item_selected]
-    print(f"handle_button_upper! executed {selected_item}")
+    print(f"handle_button_upper! execute {selected_item}")
     f = selected_item["action"]
     f(channel)
 
 # Move down the menu
-def handle_button_lower(unused_channel):
+def menu_mode_button_lower(unused_channel):
     global g_display
     print("handle_button_lower!")
     g_display.select_next_item()
@@ -179,8 +192,8 @@ def main_loop(display, midi_port):
 
             # TODO: if in a session?
 
-            print("Sleeping in menu mode?")
-            time.sleep(10)
+            print(f"Sleeping {MENU_EVENT_DELAY_S} sec in menu mode. Needed?")
+            time.sleep(MENU_EVENT_DELAY_S)
             continue
 
         if g_rescan_midi:
