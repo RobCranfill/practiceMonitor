@@ -42,7 +42,7 @@ g_run = True
 g_rescan_midi = False
 
 # global display/function mode
-# g_run_mode_menu = False
+g_menu_mode = False
 
 # button handler needs to use globals :-/
 g_display = None 
@@ -82,29 +82,6 @@ def output_record(total_sessions, session_start_sec, session_end_sec, session_no
             )
 
 
-# def button_handler_upper(channelIsIgnored):
-#     global g_display
-#     if g_display is None:
-#         print("NO DISPLAY YET???")
-#         return
-#     # TODO: remove old eveny handler?
-#     print("Handling menu....")
-#     GPIO.remove_event_detect(BUTTON_A_pin)
-#     GPIO.remove_event_detect(BUTTON_B_pin)
-#     print("Event handlers removed?")
-#     g_display.handle_menu_mode(
-#             (
-#             {"text": "One",     "action": do_action_one}, 
-#             {"text": "Two",     "action": do_action_two}, 
-#             {"text": "Three",   "action": do_action_three}
-#             ),
-#             BUTTON_A_pin, BUTTON_B_pin
-#         )
-# def button_handler_lower(channelIsIgnored):
-#     # 
-#     print(f"Lower button! ({channelIsIgnored})")
-
-
 def set_up_buttons():
 
     GPIO.setmode(GPIO.BCM)
@@ -116,34 +93,50 @@ def set_up_buttons():
     # GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=button_handler_lower, bouncetime=300)
 
 
-def dummy_handler(channel):
-    print(f"dummy_handler({channel})")
+def handle_action_1(channel):
+    print(f"handle_action_1({channel})")
+
+def handle_action_2(channel):
+    print(f"handle_action_2({channel})")
+
+def handle_action_3(channel):
+    print(f"handle_action_3({channel})")
 
 
 def handle_menu_mode(event_channel):
+    global g_display
+    global g_menu_mode
+    global g_menu_data
+
 
     print("BEGIN handle_menu_mode!")
+
     GPIO.remove_event_detect(event_channel)
     GPIO.add_event_detect(BUTTON_A_pin, GPIO.FALLING, callback=handle_button_upper, bouncetime=300)
     GPIO.add_event_detect(BUTTON_B_pin, GPIO.FALLING, callback=handle_button_lower, bouncetime=300)
 
+    g_menu_data = (
+            {"text": "One",     "action": handle_action_1}, 
+            {"text": "Two",     "action": handle_action_2}, 
+            {"text": "Three",   "action": handle_action_3}
+            )
+    g_display.start_menu_mode(g_menu_data)
+
+    print("Exiting handle_menu_mode")
+    g_menu_mode = True
+
+
+# Execute selected action
+def handle_button_upper(channel):
     global g_display
-    g_display.start_menu_mode((
-            {"text": "One",     "action": dummy_handler}, 
-            {"text": "Two",     "action": dummy_handler}, 
-            {"text": "Three",   "action": dummy_handler}
-            ))
+    global g_menu_data
 
-    # # need a global to exit menu mode
-    # while True:
-    #     pass
+    selected_item = g_menu_data[g_display.menu_item_selected]
+    print(f"handle_button_upper! executed {selected_item}")
+    f = selected_item["action"]
+    f(channel)
 
-
-def handle_button_upper(unused_channel):
-    global g_display
-    print("handle_button_upper!")
-    g_display.select_prev_item()
-
+# Move down the menu
 def handle_button_lower(unused_channel):
     global g_display
     print("handle_button_lower!")
@@ -158,6 +151,9 @@ def main_loop(display, midi_port):
 
     # if MIDI changes, we will find out this way
     global g_rescan_midi
+
+    # If we are handling the menu, ignore MIDI events?
+    global g_menu_mode
 
 
     set_up_buttons()
@@ -178,6 +174,14 @@ def main_loop(display, midi_port):
     # old_run_mode_menu = g_run_mode_menu
 
     while g_run:
+
+        if g_menu_mode:
+
+            # TODO: if in a session?
+
+            print("Sleeping in menu mode?")
+            time.sleep(10)
+            continue
 
         if g_rescan_midi:
             midi_port, port_name = get_midi_port_and_name()

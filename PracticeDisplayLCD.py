@@ -267,16 +267,18 @@ class PracticeDisplay:
         self.menu_item_selected = (self.menu_item_selected + 1) % len(self.menu_data)
         self.update_menu_display()
 
-    def select_prev_item(self):
-        self.menu_item_selected = (self.menu_item_selected -1) % len(self.menu_data)
-        self.update_menu_display()
-
+    # def select_prev_item(self):
+    #     self.menu_item_selected = (self.menu_item_selected -1) % len(self.menu_data)
+    #     self.update_menu_display()
+    
+    # draw according to menu_data and menu_selected_item
     def update_menu_display(self):
         i = 0
         for m in self.menu_data:
             c = "#00FF00" if i == self.menu_item_selected else "#FFFFFF"
             self.draw_text_in_color(i, m["text"], c)
             i += 1
+        self.update_display()
 
 
 def test():
