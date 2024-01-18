@@ -322,11 +322,14 @@ def get_midi_port_and_name():
         if pName.find("Through") == -1:
             port_name = pName
             break
+
     if port_name is None:
-        print("Can't find non-Through port!")
+        print("*********************************")
+        print("Can't find non-through MIDI port!")
+        print("*********************************")
         # TODO: er, return something so we can exit nice up top
-        # throw an expception?
-        sys.exit(1) 
+        # TODO: or throw an exception?
+        return None
 
     print(f"Using MIDI port {port_name}")
     midi_port = mido.open_input(port_name)
@@ -357,18 +360,22 @@ def main(args):
 
 
     try:
-        midi_port, port_name = get_midi_port_and_name()
-        display.set_device_name(port_name)
+        midi_ports = get_midi_port_and_name()
+        if midi_ports is not None:
+            midi_port, port_name = midi_ports
+            display.set_device_name(port_name)
+            main_loop(display, midi_port)
 
-        main_loop(display, midi_port)
-
-    # except Exception as e:
-    #     print(f"Got exception {e}")
+    except Exception as e:
+        print(f"Got exception {e}")
 
     finally:
         display.set_backlight_on(False)
 
-        GPIO.cleanup()
+        try:
+            GPIO.cleanup()
+        except:
+            pass
 
         print("Done!")
 
