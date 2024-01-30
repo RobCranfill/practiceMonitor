@@ -46,7 +46,8 @@ My first instance of this part has developed visible defects. Are they fragile? 
   * One solution: Make RPi Linux filesystem read-only. See https://learn.adafruit.com/read-only-raspberry-pi
     * Can I make some of it R/W? For persistence? Needed??
   * Workaround: GUI menu for shutdown
-
+ * https://github.com/RobCranfill/practiceMonitor/security/dependabot/1
+ 
 
 ## Installation
 * Python 3.11.2 used
