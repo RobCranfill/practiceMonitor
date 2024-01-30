@@ -4,15 +4,18 @@
 ## Goal
 A bit of hardware (plus software/firmware, of course) that I can plug into a
 MIDI keyboard (via USB) that will monitor my keyboard practice. At a minimum, show
-elapsed time for the week's practice. But other interting stats are possible.
+elapsed time for the week's practice. But other interesting stats are possible.
+
+First, implement a Minimum Viable Product; add bells and whistles later (what a concept!).
 
 Eventually create a front-end &ndash; app? website? &ndash; to slice and dice the data.
+Add social features?
 
 
 ## Main Hardware
 We need something that can act as a MIDI/USB "host". This seems to be problematic
 for anything smaller than a Raspberry Pi Zero, which is what I'm using now (Zero2W).
-I was hoping to use a Pi Pico or the like, but USB Host capability is poorly
+I was hoping to use a Pi Pico or the like, but USB Host capability is currently poorly
 supported (in CircuitPython anyway). 
 
 
@@ -25,34 +28,25 @@ supported (in CircuitPython anyway).
 
 ## Display
 Now using an [Adafruit 1.3: TFT display](https://www.adafruit.com/product/4484) - looks nice! 
-Except it's *slow*! Either find a workaround or find a replacement display.
+Except it's *slow*! Either find a workaround or find a replacement display. 
+My first instance of this part has developed visible defects. Are they fragile? short lived?
 
 
-* Output
- * Use [Adafruit IoT](https://io.adafruit.com/robcranfill/overview) !
-   * Device sends session data to cloud
-   * Phone/Desktop app queries cloud and shows data analysis
+## Stretch Goals (post MVP)
+* Data collection, storage, presentation
+ * Use [Adafruit IoT](https://io.adafruit.com/robcranfill/overview) ?
+   * Device sends session data updates to cloud
+   * Phone/desktop app queries cloud and shows data analysis
 
 
 ## Issues
 * Power-down safety
  This is the second reason, after cost, that I'd prefer a Pico - how to make it safe to 
  simply power down the device? 
-   * SOLUTION: Make RPi Linux filesystem read-only. See https://learn.adafruit.com/read-only-raspberry-pi
-   * Can I make some of it R/W? For persistence? Needed??
+  * One solution: Make RPi Linux filesystem read-only. See https://learn.adafruit.com/read-only-raspberry-pi
+    * Can I make some of it R/W? For persistence? Needed??
+  * Workaround: GUI menu for shutdown
 
-
-## To Do
- * Handle no MIDI device attached - including displaying msg on screen?
- * Done did:<strike>
-   * Handle SIGTERM/INT &c (blank screen, etc)
-   * Show MIDI device name on LCD
-   * LCD display - backlight off doesn't work
-   * Clear/poweroff display when done
-   * Auto-select appropriate MIDI device
-   * Create stand-alone command to turn off backlight; use it.
-   </strike>
- 
 
 ## Installation
 * Python 3.11.2 used
@@ -83,11 +77,13 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
   * <strike>How to check if service already running? (For running from command line)
     </strike>
 
-* Notes:
+
+* Notes
   * script at /lib/systemd/system/pmz.service
     * <code>sudo chmod 644 /lib/systemd/system/pmz.service</code>
   * <code>sudo systemctl daemon-reload</code>
   * <code>sudo systemctl [enable|disable|start|stop|status] pmz.service</code>
+
 
 ## Workflow Revisited
  * Attach PiZero2W via USB MIDI cable (& OTC connector) to MPKmini; via USB to power brick.
@@ -102,4 +98,15 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
    * runPMZ.sh - script that runs the PMon as a service, for running standalone.
      * Document above at "Linux Service"
 
-     
+
+## To Do
+ * USE GITHUB 'ISSUES' FOR THIS.
+ * Completed:
+   * Handle no MIDI device attached - including displaying msg on LCD
+   * Handle SIGTERM/INT &c (blank screen, etc)
+   * Show MIDI device name on LCD
+   * LCD display - backlight off doesn't work
+   * Clear/poweroff display when done
+   * Auto-select appropriate MIDI device
+   * Create stand-alone command to turn off backlight; use it.
+ 
