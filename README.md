@@ -88,3 +88,18 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
     * <code>sudo chmod 644 /lib/systemd/system/pmz.service</code>
   * <code>sudo systemctl daemon-reload</code>
   * <code>sudo systemctl [enable|disable|start|stop|status] pmz.service</code>
+
+## Workflow Revisited
+ * Attach PiZero2W via USB MIDI cable (& OTC connector) to MPKmini; via USB to power brick.
+ * Wait until 'ping pizero2w.local' returns a hit.
+ * On PC, run './mountsmb.sh' to mount SMB share, start Code pointing to SMB share.
+ * Use Termius (or whatever) to SSH to pizero2w.local.
+ * On PiZero2w, run 'source zenv/bin/activate' to start venv for PMon.
+ * Scripts on pmz:
+   * pmz.sh - runs the code in the forground, for development
+   * mountsmb.sh - as above
+   * check_pm_service.sh - sees if PMon is running in background; bad things happen if you try to run code twice.
+   * runPMZ.sh - script that runs the PMon as a service, for running standalone.
+     * Document above at "Linux Service"
+
+     
