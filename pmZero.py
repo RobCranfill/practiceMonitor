@@ -159,7 +159,7 @@ def menu_mode_button_lower(unused_channel):
 
 def main_loop(display, midi_port):
 
-    # when this goes False, we stop procesing events
+    # when this goes False, we stop processing events
     global g_run
 
     # if MIDI changes, we will find out this way
@@ -294,6 +294,9 @@ def main_loop(display, midi_port):
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
         time.sleep(MIDI_EVENT_DELAY_S)
 
+        #### end while g_run
+
+
     # end main_loop
 
 
@@ -364,14 +367,19 @@ def main(args):
         if midi_ports is not None:
             midi_port, port_name = midi_ports
             display.set_device_name(port_name)
+
+            # Main event-handling loop.
+            #
             main_loop(display, midi_port)
 
     except Exception as e:
         print(f"Got exception {e}")
 
     finally:
+        display.clear_display()
         display.set_backlight_on(False)
 
+        # FIXME: This is the polite thing to do, but doesn't work? throws exception also 
         try:
             GPIO.cleanup()
         except:
