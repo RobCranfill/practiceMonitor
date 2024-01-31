@@ -43,6 +43,8 @@ MAX_MENU_ITEMS = 9
 def format_seconds(n_seconds):
     return f"00:{(n_seconds // 60):02}:{(n_seconds % 60):02}"
 
+# TODO: FIXME: Should the deinit method tidy up the GPIO pins? It does call deinit() is that enough?
+
 
 class PracticeDisplay:
 
@@ -147,10 +149,12 @@ class PracticeDisplay:
         print(f"* Setting backlight {'on' if on_state else 'off'}")
         self.backlight_.value = on_state
 
+
     def __del__(self):
 
         print("* Garbage-collecting display object")
-
+        
+        self.clear_display()
         self.set_backlight_on(False)
 
         self.disp_ = None
@@ -163,8 +167,9 @@ class PracticeDisplay:
     
         self.backlight_.deinit()
         self.backlight_ = None
-        
 
+        
+    # This, like update_display(), takes some time. Do not use willy-nilly!
     def clear_display(self):
         self.draw_.rectangle((0, 0, self.width_, self.height_), outline=0, fill=(0, 0, 0))
         self.disp_.image(self.image_, self.rotation_)
@@ -281,8 +286,8 @@ class PracticeDisplay:
         self.update_display()
 
 
-def test():
-    print("\nRunning test code for PracticeDisplay....")
+def test_simple():
+    print("\nRunning simple test code for PracticeDisplay....")
 
     pd = PracticeDisplay()
     pd.clear_display()
@@ -291,6 +296,8 @@ def test():
     pd.draw_text_in_color(3, "     happening?", "#00FFFF")
     pd.draw_text_in_white(4, " okeedokee??")
     
+    pd.update_display()
+
     print("Displaying! Press ^C to break")
     try:
         while True:
@@ -299,5 +306,46 @@ def test():
         print("\nCleaning up...")
         pd = None
 
+
+def test_timing():
+
+    print("\nRunning timing test code for PracticeDisplay....")
+
+    pd = PracticeDisplay()
+    pd.clear_display()
+    pd.draw_text_in_color(1, "Timing test", "#FF0000")
+    
+    print("Displaying! Press ^C to break")
+    try:
+        n = 0
+        while True:
+
+            for n in [1, 2, 3, 4, 5]:
+
+                # no, don't clear the whole thing, that's slow
+                # pd.clear_display()
+
+                for i in range(n):
+                    pd.draw_text_in_color(i+1, f"Iteration {n}", "#00FF00")
+
+                start = time.time()
+                pd.update_display()
+                print(f"update_display for {n}: {(time.time() - start):0.2f} s")
+
+                time.sleep(1)
+
+            start = time.time()
+            pd.clear_display()
+            print(f"clear display took: {(time.time() - start):0.2f} s")
+
+
+    except KeyboardInterrupt:
+        print("\nCleaning up...")
+        pd = None
+
+
 if __name__ == "__main__":
-    test()
+
+    # test_simple()
+    test_timing()
+

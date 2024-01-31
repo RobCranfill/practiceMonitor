@@ -376,10 +376,15 @@ def main(args):
         print(f"Got exception {e}")
 
     finally:
-        display.clear_display()
-        display.set_backlight_on(False)
 
-        # FIXME: This is the polite thing to do, but doesn't work? throws exception also 
+        # Does destroying the object suffice now?
+        display = None
+        # display.clear_display()
+        # display.set_backlight_on(False)
+
+
+        # FIXME: This is the polite thing to do, but doesn't work? throws exception also
+        # Perhaps the LCD object should take care of all this in its deinit code?
         try:
             GPIO.cleanup()
         except:
