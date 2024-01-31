@@ -326,7 +326,7 @@ def test_timing():
                 # pd.clear_display()
 
                 for i in range(n):
-                    pd.draw_text_in_color(i+1, f"Iteration {n}", "#00FF00")
+                    pd.draw_text_in_color(i+1, f"Painting iter {n}, item {i}", "#00FF00")
 
                 start = time.time()
                 pd.update_display()
