@@ -13,3 +13,5 @@ echo "Service NOT running - OK!"
 
 python pmZero.py `cat aio_secret.text`
 
+# Turn LCD off - app should do this but it doesn't!
+python /home/rob/.local/bin/LCD_util.py off

@@ -156,13 +156,12 @@ def menu_mode_button_lower(unused_channel):
     g_display.select_next_item()
 
 
-
 def main_loop(display, midi_port):
 
     # when this goes False, we stop processing events
     global g_run
 
-    # if MIDI changes, we will find out this way
+    # if MIDI changes, we will find out this way via signal handler
     global g_rescan_midi
 
     # If we are handling the menu, ignore MIDI events?
@@ -185,6 +184,9 @@ def main_loop(display, midi_port):
     in_session = False
 
     # old_run_mode_menu = g_run_mode_menu
+
+    # Paint first time
+    display.update_display()
 
     while g_run:
 
@@ -210,7 +212,8 @@ def main_loop(display, midi_port):
 
         #     continue
 
-        display.update_display()
+        # FIXME: Is this extra???
+        # display.update_display()
 
         display_changed = False
 
@@ -296,7 +299,6 @@ def main_loop(display, midi_port):
 
         #### end while g_run
 
-
     # end main_loop
 
 
@@ -306,7 +308,6 @@ def set_up_iot(key):
     kl = len(key)
     key_masked = key[:4] + "*"*(kl-8) + key[kl-4:]
     print(f"AIO key: {key_masked}")    
-
 
 
 # return (port, name)
@@ -340,6 +341,17 @@ def get_midi_port_and_name():
     return midi_port, short_name
 
 
+def set_up_display():
+
+    disp = PracticeDisplay.PracticeDisplay()
+    disp.show_elapsed_time(0)
+    disp.show_session_time(0)
+    disp.set_session_label("Session: 0")
+    disp.set_notes_label("Notes: 0")
+    # disp.set_time_session_fg("black")
+    return disp
+
+
 def main(args):
     global g_display
 
@@ -348,17 +360,11 @@ def main(args):
     if len(args) > 1:
         set_up_iot(args[1])
 
-    # set up signal handlers; kill and usr1 (for reloading MIDI list)
+    # set up signal handlers; kill and usr1 (for reloading MIDI device list)
     signal.signal(signal.SIGINT,  handle_signal)
     signal.signal(signal.SIGUSR1, handle_signal)
 
-
-    display = PracticeDisplay.PracticeDisplay()
-    display.show_elapsed_time(0)
-    display.show_session_time(0)
-    display.set_session_label("Session: 0")
-    display.set_notes_label("Notes: 0")
-    # display.set_time_session_fg("black")
+    display = set_up_display()
     g_display = display
 
 
@@ -377,10 +383,11 @@ def main(args):
 
     finally:
 
-        # Does destroying the object suffice now?
+        print("PM exiting; cleaning up...")
+        # FIXME: Destroying display object is supposed to suffice.
+        display.set_backlight_on(False) # this doesn't work either!?!?
+        display.clear_display()
         display = None
-        # display.clear_display()
-        # display.set_backlight_on(False)
 
 
         # FIXME: This is the polite thing to do, but doesn't work? throws exception also

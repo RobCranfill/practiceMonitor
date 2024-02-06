@@ -32,6 +32,14 @@ Except it's *slow*! Either find a workaround or find a replacement display.
 My first instance of this part has developed visible defects. Are they fragile? short lived?
 
 
+## Minimum Viable Product
+* Alternate display info
+Since the display of the elapsed session time seems problematic (doesn't update nicely) 
+can we show something else? Like just a "Session in progress" screen? But that doesn't encourage 
+extending a session ("I see I have practiced for 17 minutes - can I make it to 20?").
+
+
+
 ## Stretch Goals (post MVP)
 * Data collection, storage, presentation
  * Use [Adafruit IoT](https://io.adafruit.com/robcranfill/overview) ?
