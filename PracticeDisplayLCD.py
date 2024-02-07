@@ -157,6 +157,7 @@ class PracticeDisplay:
         self.clear_display()
         self.set_backlight_on(False)
 
+        ## not needed?
         self.disp_ = None
         self.image_ = None
         self.rotation_ = None
@@ -165,8 +166,10 @@ class PracticeDisplay:
         self.big_font_ = None
         self.small_font_ = None
     
-        self.backlight_.deinit()
-        self.backlight_ = None
+        # FIXME: none of the following help turn turn backlight off when we exit.
+
+        # # self.backlight_.deinit()
+        # self.backlight_ = None
 
         
     # This, like update_display(), takes some time. Do not use willy-nilly!

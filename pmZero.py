@@ -386,8 +386,9 @@ def main(args):
         print("PM exiting; cleaning up...")
         # FIXME: Destroying display object is supposed to suffice.
         display.set_backlight_on(False) # this doesn't work either!?!?
-        display.clear_display()
+        # display.clear_display()
         display = None
+        g_display = None
 
 
         # FIXME: This is the polite thing to do, but doesn't work? throws exception also
