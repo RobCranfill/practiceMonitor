@@ -166,10 +166,9 @@ class PracticeDisplay:
         self.big_font_ = None
         self.small_font_ = None
     
-        # FIXME: none of the following help turn turn backlight off when we exit.
-
-        # # self.backlight_.deinit()
-        # self.backlight_ = None
+        # this may matter
+        self.backlight_.deinit()
+        self.backlight_ = None
 
         
     # This, like update_display(), takes some time. Do not use willy-nilly!

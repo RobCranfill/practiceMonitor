@@ -14,5 +14,5 @@ echo "Service NOT running - OK!"
 python pmZero.py `cat aio_secret.text`
 
 # Turn LCD off - app should do this but it doesn't!
-echo Setting backlight off in main script - FIXME!
-python /home/rob/.local/bin/LCD_util.py off
+# echo Setting backlight off in main script - FIXME!
+# python /home/rob/.local/bin/LCD_util.py off
