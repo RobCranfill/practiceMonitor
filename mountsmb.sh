@@ -9,3 +9,5 @@ ls -al /mnt/pizero2w/proj/practiceMonitor
 
 cd /mnt/pizero2w/proj/practiceMonitor
 code .
+termius-app
+
