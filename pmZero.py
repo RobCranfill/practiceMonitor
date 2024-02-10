@@ -8,6 +8,7 @@ import json
 import os
 import signal
 import sys
+import threading
 import time
 
 # installed libs
@@ -28,8 +29,9 @@ JSON_KEY_END    = "SeshEnd"
 JSON_KEY_NOTES  = "SeshNotes"
 
 SESSION_TIMEOUT_SEC =  10
+DISPLAY_UPDATE_RATE = 0.5 # seconds
 
-MIDI_EVENT_DELAY_S = 0.01
+# MIDI_EVENT_DELAY_S = 0.01 # not useful? we need to go as fast as possible, it seems
 MENU_EVENT_DELAY_S = 1
 
 BUTTON_A_pin = 24
@@ -155,6 +157,16 @@ def menu_mode_button_lower(unused_channel):
     print("handle_button_lower!")
     g_display.select_next_item()
 
+def display_updater(display):
+    global g_run
+
+    print(f"display_updater!")
+    if not g_run:
+        print(f"g_run is False; display_updater doing nothing")
+        return
+    display.update_display()
+    t = threading.Timer(DISPLAY_UPDATE_RATE, display_updater, args=(display,))
+    t.start()
 
 def main_loop(display, midi_port):
 
@@ -188,7 +200,13 @@ def main_loop(display, midi_port):
     # Paint first time
     display.update_display()
 
+    display_timer = threading.Timer(DISPLAY_UPDATE_RATE, display_updater, args=(display,))
+    display_timer.start()
+
     while g_run:
+
+        # for debugging display timing issue
+        debug_main_loop_start = time.time()
 
         if g_menu_mode:
 
@@ -256,11 +274,16 @@ def main_loop(display, midi_port):
 
             last_event_time = event_time
         
-        # if notes_in_queue > 0:
-        #     print(f"Processed {notes_in_queue} MIDI notes in {(time.time()-queue_start):0.2f}")
+        if notes_in_queue > 0:
+            print(f"Processed {notes_in_queue} MIDI notes in {(time.time()-queue_start):0.2f}")
 
+        debug_note_process_time = time.time() - debug_main_loop_start
+        if debug_note_process_time > 0.01:
+            print(f"debug_note_process_time: {debug_note_process_time:0.2f}")
 
         if in_session:
+
+            debug_session_process_time = time.time()
 
             now_time = int(time.time())
             if now_time > last_event_time:
@@ -291,12 +314,20 @@ def main_loop(display, midi_port):
                     # WTF was this?
                     # display.set_time_session_fg("black")
 
-        if display_changed:
-            display.update_display()
+            debug_session_process_time = time.time() - debug_session_process_time
+            if debug_session_process_time > 0.01:
+                print(f"debug_session_process_time: {debug_session_process_time:0.2f}")
+
+        # if display_changed:
+        #     display.update_display()
 
         # print(f"Done. Sleeping {MIDI_EVENT_DELAY_S} seconds.")
-        time.sleep(MIDI_EVENT_DELAY_S)
+        # time.sleep(MIDI_EVENT_DELAY_S)
 
+        debug_main_loop_time = time.time() - debug_main_loop_start
+        if debug_main_loop_time > 0.01:
+            print(f"debug_main_loop_time: {debug_main_loop_time:0.2f}")
+        
         #### end while g_run
 
     # end main_loop
