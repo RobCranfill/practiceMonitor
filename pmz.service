@@ -7,5 +7,14 @@ Type=simple
 ExecStart=/home/rob/proj/practiceMonitor/run/runPMZ.sh
 Restart=on-abort
 
+# works?
+# what's 'journal' .vs. 'syslog'?
+# takes one of:
+#   inherit, null, tty, journal, kmsg, journal+console, kmsg+console, file:path, append:path, truncate:path, socket or fd:name
+#
+StandardOutput=null
+StandardError=journal
+#StandardOutput=journal
+
 [Install]
 WantedBy=multi-user.target

@@ -9,8 +9,12 @@ We need a way to notify the app that things have changed.
 Via the <tt>udev</tt> facility, watch for an appropriate device (what?) being added (removed? changed?)
 and run a script that sends a signal to the Python code to re-scan the MIDI devices.
 
-Currently we catch all USB "change" actions. This was nice because in testing I only saw one "change"
+Currently we catch all USB "ACTION=change" actions. This was nice because in testing I only saw one "change"
 for any given physical plugging-in, as opposed to multiple "add" and "bind" actions.
+
+(Whereas "ACTION=add" and "ACTION=remove" each cause 13 udev events!)
+
+*But* this does not catch removal of the device, hence the outstanding issue (#7) of not being able to show that in the GUI.
 
 This still probably fires more often than needed (for other devices than keyboards) but works.
 It would be better to only do so with appropriate devices ("sound"? "alsa"?). 

@@ -1,4 +1,5 @@
 # udev rules for Practice Monitor
 # robcranfill
 
-SUBSYSTEMS=="usb" ACTION=="change" RUN+="/home/rob/proj/practiceMonitor/udev/trigger.sh"
+SUBSYSTEMS=="usb" ACTION=="add"    RUN+="/home/rob/proj/practiceMonitor/udev/trigger.sh add"
+SUBSYSTEMS=="usb" ACTION=="remove" RUN+="/home/rob/proj/practiceMonitor/udev/trigger.sh remove"
