@@ -39,7 +39,7 @@ Working dir <tt>/home/rob/proj/practiceMonitor/udev</tt>
 * https://www.reactivated.net/writing_udev_rules.html#external-run was very helpful writing udev rules, if a little out of date.
 * To see messages from shell script, <code>journalctl -f -n 0</code>
   * Or <code>journalctl -f -n 0 | grep pracmon</code> to see just our messages.
-
+* To reload changed rules, <code>udevadm control --reload-rules && udevadm trigger</code>
   
 ## Notes from testing
 
@@ -49,7 +49,8 @@ Working dir <tt>/home/rob/proj/practiceMonitor/udev</tt>
 Note that the following was performed on my laptop, not the PiZero, and does
 not show a "change" event! Possible issue for a desktop version.
 
-<code>udevadm monitor --subsystem-match=usb</code>
+<code>udevadm monitor --subsystem-match=usb</code> possibly adding <code>--kernel --udev -p</code>
+
 <pre>
 rob@robuntuflex:~/proj/practiceMonitor/udev$ udevadm monitor --subsystem-match=usb
 monitor will print the received events for:
