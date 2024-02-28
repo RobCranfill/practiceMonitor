@@ -1,7 +1,7 @@
 # PracticeMonitor for RPi Zero
 # robcranfill@gmail.com
+# https://github.com/RobCranfill/practiceMonitor
 
-# /mnt/pizero2w/proj/practiceMonitor/pmZero.py
 
 # standard libs
 import json
