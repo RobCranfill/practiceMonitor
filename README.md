@@ -59,10 +59,14 @@ extending a session ("I see I have practiced for 17 minutes - can I make it to 2
 
 ## Installation
 * Python 3.11.2 used
-* Run in a 'venv' - one for PiZero <strike>, another for desktop (don't need TK stuff on Pi)</strike>
+* Runs in a 'venv':
   * <code>python -m venv zenv --system-site-packages</code>
+  * <code>source zenv/bin/activate</code>
 * Python libs
-  * (see 'requirements.txt')
+  * <code>sudo apt-get install python-dev</code>
+  * <code>pip install -f requirements.txt</code>
+* The following are no longer needed, since we use the above requirements file. Delete after verification!
+  <strike>
 * Linux softare
   * RTMIDI backend for Mido<code>
     * pip install --pre python-rtmidi
@@ -78,7 +82,7 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
      * IOT (Internet of Things) 
        * <code>pip3 install adafruit-io</code>
        * see https://learn.adafruit.com/welcome-to-adafruit-io/python-and-adafruit-io
-
+</strike>
 
 ## Linux service
 * TODO:
