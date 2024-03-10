@@ -33,10 +33,7 @@ My first instance of this part has developed visible defects. Are they fragile? 
 
 
 ## Minimum Viable Product
-* Alternate display info
-Since the display of the elapsed session time seems problematic (doesn't update nicely) 
-can we show something else? Like just a "Session in progress" screen? But that doesn't encourage 
-extending a session ("I see I have practiced for 17 minutes - can I make it to 20?").
+Need to define this and implement it first! Nothing fancy!!
 
 
 ## Stretch Goals (post MVP)
@@ -54,7 +51,11 @@ extending a session ("I see I have practiced for 17 minutes - can I make it to 2
     * Can I make some of it R/W? For persistence? Needed??
   * Workaround: GUI menu for shutdown
  * https://github.com/RobCranfill/practiceMonitor/security/dependabot/1
- 
+ * Alternate display 
+  
+Since the display of the elapsed session time seems problematic (doesn't update nicely) 
+can we show something else? Like just a "Session in progress" screen? But that doesn't encourage 
+extending a session ("I see I have practiced for 17 minutes - can I make it to 20?").
 
 ## Installation
 * Python 3.11.2 used
