@@ -21,7 +21,7 @@ supported (in CircuitPython anyway).
 
 ## Software
 * Full RPi Python (3.11.x) code
-  * with Adafruit Blinka (see 'Requirements' below)
+  * with Adafruit Blinka (see 'Installation' below) and a bunch of other stuff!
 * Also some udev rules & scripts to run it all
 * If we ever move to a smaller device, CircuitPython will probably be necessary.
 
@@ -37,7 +37,6 @@ My first instance of this part has developed visible defects. Are they fragile? 
 Since the display of the elapsed session time seems problematic (doesn't update nicely) 
 can we show something else? Like just a "Session in progress" screen? But that doesn't encourage 
 extending a session ("I see I have practiced for 17 minutes - can I make it to 20?").
-
 
 
 ## Stretch Goals (post MVP)
@@ -63,8 +62,15 @@ extending a session ("I see I have practiced for 17 minutes - can I make it to 2
   * <code>python -m venv zenv --system-site-packages</code>
   * <code>source zenv/bin/activate</code>
 * Python libs
+  * Blinka:
+    * <code>pip3 install --upgrade adafruit-python-shell</code>
+    * <code>wget https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/master/raspi-blinka.py</code>
+    * <code>sudo -E env PATH=$PATH python3 raspi-blinka.py</code>
   * <code>sudo apt-get install python-dev</code>
   * <code>pip install -f requirements.txt</code>
+* Misc
+  * sudo apt-get install fonts-dejavu
+  * 
 * The following are no longer needed, since we use the above requirements file. Delete after verification!
   <strike>
 * Linux softare
