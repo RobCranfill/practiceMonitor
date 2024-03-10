@@ -71,7 +71,9 @@ extending a session ("I see I have practiced for 17 minutes - can I make it to 2
   * <code>pip install -f requirements.txt</code>
 * Misc
   * sudo apt-get install fonts-dejavu
-  * 
+  * FUCK ME, I HAD TO DO THIS. WTF??
+  * <code>python3 -m pip install --upgrade --force-reinstall adafruit-blinka</code>
+  
 * The following are no longer needed, since we use the above requirements file. Delete after verification!
   <strike>
 * Linux softare
