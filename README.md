@@ -60,6 +60,7 @@ extending a session ("I see I have practiced for 17 minutes - can I make it to 2
 ## Installation
 * Python 3.11.2 used
 * Run in a 'venv' - one for PiZero <strike>, another for desktop (don't need TK stuff on Pi)</strike>
+  * <code>python -m venv zenv --system-site-packages</code>
 * Python libs
   * (see 'requirements.txt')
 * Linux softare
