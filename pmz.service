@@ -4,7 +4,7 @@ After=multi-user.target
 
 [Service]
 Type=simple
-ExecStart=/home/rob/proj/practiceMonitor/run/runPMZ.sh
+ExecStart=/home/rob/proj/practiceMonitor/run/runPMZ_as_Service.sh
 Restart=on-abort
 
 # works?

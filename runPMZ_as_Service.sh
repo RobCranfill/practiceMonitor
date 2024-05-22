@@ -1,5 +1,6 @@
 #!/bin/bash
 # Run the Performance Monitor as a service.
+# This file is invoked by the service file, pmz.service.
 
 cd /home/rob/proj/practiceMonitor
 echo "PerfMon started" >>./perfmon.log
