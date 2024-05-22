@@ -71,7 +71,7 @@ extending a session ("I see I have practiced for 17 minutes - can I make it to 2
   * <code>pip install -f requirements.txt</code>
 * Misc
   * sudo apt-get install fonts-dejavu
-  * FUCK ME, I HAD TO DO THIS. WTF??
+  * Why did I have do do the following? (Did I have to??)
   * <code>python3 -m pip install --upgrade --force-reinstall adafruit-blinka</code>
   
 * The following are no longer needed, since we use the above requirements file. Delete after verification!
@@ -97,12 +97,12 @@ as per https://learn.adafruit.com/circuitpython-on-raspberrypi-linux/installing-
 * TODO:
   * Use syslog (or whatever)
   * Done:
-  * <strike>How to check if service already running? (For running from command line)
-    </strike>
+    * <strike>How to check if service already running? (For running from command line)</strike>
 
 
 * Notes
-  * script at /lib/systemd/system/pmz.service
+  * script at /lib/systesmd/system/pmz.service
+    * <code>sudo cp pmz.service /lib/systemd/system/</code>
     * <code>sudo chmod 644 /lib/systemd/system/pmz.service</code>
   * <code>sudo systemctl daemon-reload</code>
   * <code>sudo systemctl [enable|disable|start|stop|status] pmz.service</code>
